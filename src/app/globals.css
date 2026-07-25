@@ -1,0 +1,207 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --breakpoint-xs: 475px;
+  --color-primary: #1a1a1a;
+  --color-waabi-bg: #f9f7f1;
+  --color-waabi-green: #c9def0;
+  --color-waabi-green-dark: #8fb8dc;
+  --color-waabi-accent: #e7f0f7;
+  --color-white: #ffffff;
+  --color-dark: #121212;
+  --color-dark-soft: #2a2a2a;
+  --color-gray: #888888;
+  --color-gray-light: #cccccc;
+
+  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-inter);
+}
+
+:root {
+  --background: #f9f7f1; /* Beige background */
+  --foreground: #121212;
+}
+
+/* ===== GLOBAL RESETS ===== */
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #c9def0 transparent;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body::-webkit-scrollbar { width: 6px; }
+body::-webkit-scrollbar-track { background: transparent; }
+body::-webkit-scrollbar-thumb { background: #c9def0; border-radius: 10px; }
+
+::selection {
+  background: #c9def0;
+  color: #121212;
+}
+
+/* ===== TYPOGRAPHY ===== */
+.heading-massive {
+  font-size: clamp(3rem, 8vw, 6.5rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-weight: 500;
+}
+
+.heading-xl {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  font-weight: 500;
+}
+
+.heading-lg {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+}
+
+.label-upper {
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* ===== WAABI BUTTONS ===== */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: #c9def0;
+  color: #121212;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(209, 226, 196, 0.4);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(209, 226, 196, 0.6);
+  background: #8fb8dc;
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: transparent;
+  color: #121212;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 100px;
+  border: 1px solid rgba(18, 18, 18, 0.2);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-outline:hover {
+  border-color: #121212;
+  background: rgba(18, 18, 18, 0.05);
+  transform: translateY(-2px);
+}
+
+/* ===== GLASSMORPHISM (Waabi style) ===== */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+  border-radius: 24px;
+}
+
+.glass-nav {
+  background: rgba(249, 247, 241, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* ===== HORIZONTAL SCROLL ===== */
+.horizontal-scroll {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 1rem;
+}
+
+.horizontal-scroll::-webkit-scrollbar { display: none; }
+
+.horizontal-scroll > * {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* ===== CARD STYLES ===== */
+.waabi-card {
+  background: #ffffff;
+  border-radius: 24px;
+  overflow: hidden;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(0,0,0,0.03);
+}
+
+.waabi-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+}
+
+.waabi-card:hover img {
+  transform: scale(1.05);
+}
+
+/* ===== SLIDER ANIMATIONS ===== */
+.slide-enter {
+  opacity: 0;
+  transform: scale(0.95) translateX(20px);
+}
+.slide-enter-active {
+  opacity: 1;
+  transform: scale(1) translateX(0);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.slide-exit {
+  opacity: 1;
+  transform: scale(1) translateX(0);
+}
+.slide-exit-active {
+  opacity: 0;
+  transform: scale(1.05) translateX(-20px);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
