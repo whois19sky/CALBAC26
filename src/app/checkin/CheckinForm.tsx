@@ -24,7 +24,11 @@ export default function CheckinPage() {
     id_number: "",
     id_image_url: "",
     emergency_contact: "",
-    special_requests: ""
+    special_requests: "",
+    address: "",
+    visa_no: "",
+    coming_from: "",
+    going_to: ""
   });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,15 +54,19 @@ export default function CheckinPage() {
     try {
       // Find booking if ID is provided
       let actualBookingId = null;
+      let bookingCheckIn = "";
+      let bookingCheckOut = "";
       if (formData.booking_id) {
         const { data: booking } = await supabase
           .from('bookings')
-          .select('id')
+          .select('id, check_in, check_out')
           .ilike('id', `${formData.booking_id}%`)
           .single();
           
         if (booking) {
           actualBookingId = booking.id;
+          bookingCheckIn = booking.check_in || "";
+          bookingCheckOut = booking.check_out || "";
         }
       }
 
@@ -73,7 +81,11 @@ export default function CheckinPage() {
         id_number: formData.id_number,
         id_image_base64: formData.id_image_url, // Storing URL in the text column
         emergency_contact: formData.emergency_contact,
-        special_requests: formData.special_requests
+        special_requests: formData.special_requests,
+        address: formData.address,
+        visa_no: formData.visa_no,
+        coming_from: formData.coming_from,
+        going_to: formData.going_to
       });
 
       if (error) throw error;
@@ -94,6 +106,12 @@ export default function CheckinPage() {
           emergency_contact: formData.emergency_contact,
           special_requests: formData.special_requests,
           id_image_url: formData.id_image_url,
+          address: formData.address,
+          visa_no: formData.visa_no,
+          coming_from: formData.coming_from,
+          going_to: formData.going_to,
+          check_in: bookingCheckIn,
+          check_out: bookingCheckOut,
         }),
       }).catch((err) => console.error("Google sync failed:", err));
 
@@ -224,6 +242,45 @@ export default function CheckinPage() {
                       value={formData.id_number}
                       onChange={(e) => setFormData({...formData, id_number: e.target.value})}
                       className={inputClass}
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className={labelClass}>Address</label>
+                    <input 
+                      type="text"
+                      value={formData.address}
+                      onChange={(e) => setFormData({...formData, address: e.target.value})}
+                      className={inputClass}
+                      placeholder="Home address"
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Visa No. (if applicable)</label>
+                    <input 
+                      type="text"
+                      value={formData.visa_no}
+                      onChange={(e) => setFormData({...formData, visa_no: e.target.value})}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Coming From</label>
+                    <input 
+                      type="text"
+                      value={formData.coming_from}
+                      onChange={(e) => setFormData({...formData, coming_from: e.target.value})}
+                      className={inputClass}
+                      placeholder="City you're arriving from"
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Going To</label>
+                    <input 
+                      type="text"
+                      value={formData.going_to}
+                      onChange={(e) => setFormData({...formData, going_to: e.target.value})}
+                      className={inputClass}
+                      placeholder="Next destination after us"
                     />
                   </div>
                   <div className="md:col-span-2">

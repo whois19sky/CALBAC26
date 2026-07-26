@@ -55,6 +55,10 @@ CREATE TABLE IF NOT EXISTS checkins (
   emergency_contact TEXT DEFAULT '',
   special_requests TEXT,
   id_image_base64 TEXT,
+  address TEXT DEFAULT '',
+  visa_no TEXT DEFAULT '',
+  coming_from TEXT DEFAULT '',
+  going_to TEXT DEFAULT '',
   google_sheet_synced BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT now()
 );

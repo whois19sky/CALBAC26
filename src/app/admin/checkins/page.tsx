@@ -135,7 +135,16 @@ export default function CheckinsManager() {
                           <>
                             <p className="text-sm font-medium text-dark">{(checkin.booking as any).room?.name}</p>
                             <div className="text-xs text-dark/60 mt-1">
-                              {format(new Date((checkin.booking as any).check_in), 'MMM dd')} - {format(new Date((checkin.booking as any).check_out), 'MMM dd')}
+                              {(() => {
+                                const ci = (checkin.booking as any).check_in;
+                                const co = (checkin.booking as any).check_out;
+                                const ciDate = ci ? new Date(ci) : null;
+                                const coDate = co ? new Date(co) : null;
+                                const validCi = ciDate && !isNaN(ciDate.getTime());
+                                const validCo = coDate && !isNaN(coDate.getTime());
+                                if (!validCi || !validCo) return "Dates unavailable";
+                                return `${format(ciDate as Date, 'MMM dd')} - ${format(coDate as Date, 'MMM dd')}`;
+                              })()}
                             </div>
                           </>
                         ) : (

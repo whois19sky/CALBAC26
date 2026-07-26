@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Play, Volume2, VolumeX } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 const WHATSAPP_LINK = "https://wa.me/919875432441?text=Hi%20Calcutta%20Backpackers!%20I'm%20interested%20in%20booking%20a%20stay.";
 
@@ -31,6 +32,16 @@ export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Skip the heavy video entirely on phones — a 4K video decode is a real
+    // performance and data-usage cost that isn't worth it on mobile hardware.
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -41,21 +52,32 @@ export default function HeroSection() {
 
   return (
     <section id="home" className="relative min-h-[100svh] w-full">
-      {/* Video Background */}
+      {/* Video Background (desktop only) / Static Image (mobile, for speed) */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        <video
-          autoPlay
-          muted={isMuted}
-          loop
-          playsInline
-          preload="auto"
-          onLoadedData={() => setVideoLoaded(true)}
-          className={`w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
-        >
-          <source src={VIDEO_URL} type="video/mp4" />
-        </video>
+        {isMobile ? (
+          <Image
+            src="/images/Community.webp"
+            alt="Calcutta Backpackers common area"
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+          />
+        ) : (
+          <video
+            autoPlay
+            muted={isMuted}
+            loop
+            playsInline
+            preload="metadata"
+            onLoadedData={() => setVideoLoaded(true)}
+            className={`w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
+          >
+            <source src={VIDEO_URL} type="video/mp4" />
+          </video>
+        )}
         {/* Fallback gradient if video doesn't load */}
-        {!videoLoaded && (
+        {!isMobile && !videoLoaded && (
           <div className="absolute inset-0 bg-gradient-to-br from-[#12314F] via-[#1E4E78] to-[#0B1F33]" />
         )}
         {/* Overlay for readability */}
@@ -63,14 +85,16 @@ export default function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-t from-dark/60 via-transparent to-dark/20" />
       </div>
 
-      {/* Mute/Unmute Button */}
-      <button
-        onClick={() => setIsMuted(!isMuted)}
-        className="absolute bottom-8 right-8 z-30 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all duration-300"
-        aria-label={isMuted ? "Unmute video" : "Mute video"}
-      >
-        {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-      </button>
+      {/* Mute/Unmute Button - desktop only, since mobile shows a static image instead of video */}
+      {!isMobile && (
+        <button
+          onClick={() => setIsMuted(!isMuted)}
+          className="absolute bottom-8 right-8 z-30 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all duration-300"
+          aria-label={isMuted ? "Unmute video" : "Mute video"}
+        >
+          {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+        </button>
+      )}
 
       {/* Content */}
       <div className="relative z-20 min-h-[100svh] max-w-[1400px] mx-auto px-6 md:px-10 py-28 md:py-32 flex flex-col justify-center">
@@ -94,9 +118,9 @@ export default function HeroSection() {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentSlide}
-                  initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -30, filter: "blur(8px)" }}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -30 }}
                   transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                   className="col-start-1 row-start-1 will-change-transform"
                 >

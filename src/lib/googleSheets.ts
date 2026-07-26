@@ -71,34 +71,46 @@ export async function appendBookingRow(booking: {
   await appendRow("Bookings", headers, row);
 }
 
+// Converts an ISO date (yyyy-mm-dd) to ddmmyyyy, matching the sheet's expected format.
+function toDdMmYyyy(isoDate: string): string {
+  if (!isoDate) return "";
+  const [year, month, day] = isoDate.split("-");
+  if (!year || !month || !day) return isoDate; // fall back to whatever was given
+  return `${day}${month}${year}`;
+}
+
 export async function appendCheckinRow(checkin: {
-  booking_id: string;
   full_name: string;
-  email: string;
-  phone: string;
+  address?: string;
   nationality: string;
-  id_type: string;
+  phone: string;
+  email: string;
+  check_in?: string;
+  check_out?: string;
   id_number: string;
-  emergency_contact?: string;
-  special_requests?: string;
-  id_image_drive_url?: string;
+  visa_no?: string;
+  coming_from?: string;
+  going_to?: string;
 }) {
   const headers = [
-    "Booking ID", "Full Name", "Email", "Phone", "Nationality", "ID Type",
-    "ID Number", "Emergency Contact", "Special Requests", "ID Photo (Drive Link)", "Synced At",
+    "Full Name", "Address", "Country", "Phone", "E-mail",
+    "Check In Date (ddmmyyyy)", "Check Out Date (ddmmyyyy)",
+    "Identity Doc. No.", "Visa No.", "Coming From", "Going To",
   ];
   const row = [
-    checkin.booking_id,
     checkin.full_name,
-    checkin.email,
-    checkin.phone,
+    checkin.address || "",
     checkin.nationality,
-    checkin.id_type,
+    checkin.phone,
+    checkin.email,
+    toDdMmYyyy(checkin.check_in || ""),
+    toDdMmYyyy(checkin.check_out || ""),
     checkin.id_number,
-    checkin.emergency_contact || "",
-    checkin.special_requests || "",
-    checkin.id_image_drive_url || "",
-    new Date().toISOString(),
+    checkin.visa_no || "",
+    checkin.coming_from || "",
+    checkin.going_to || "",
   ];
-  await appendRow("Check-ins", headers, row);
+  // Writing to "Sheet1" to match the tab in the existing hand-built sheet,
+  // rather than auto-creating a separate "Check-ins" tab.
+  await appendRow("Sheet1", headers, row);
 }

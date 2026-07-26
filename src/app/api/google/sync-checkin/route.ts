@@ -31,16 +31,17 @@ export async function POST(request: NextRequest) {
     }
 
     await appendCheckinRow({
-      booking_id: body.booking_id,
       full_name: body.full_name,
-      email: body.email,
-      phone: body.phone,
+      address: body.address,
       nationality: body.nationality,
-      id_type: body.id_type,
+      phone: body.phone,
+      email: body.email,
+      check_in: body.check_in,
+      check_out: body.check_out,
       id_number: body.id_number,
-      emergency_contact: body.emergency_contact,
-      special_requests: body.special_requests,
-      id_image_drive_url: id_image_drive_url || body.id_image_url,
+      visa_no: body.visa_no,
+      coming_from: body.coming_from,
+      going_to: body.going_to,
     });
 
     return NextResponse.json({ ok: true, id_image_drive_url });
