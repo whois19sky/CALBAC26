@@ -2,13 +2,14 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    // Caps how large a source image the optimizer will ever process, and how many
-    // distinct sizes it generates. Client uploads are now pre-resized to begin with,
-    // but this is a second safety layer against server memory spikes from any image
-    // (including ones already sitting in storage from before that fix existed).
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256],
-    minimumCacheTTL: 31536000,
+    // Server-side image optimization (which depends on the "sharp" library having
+    // correctly installed native binaries for this specific host) was causing every
+    // single image on the site to fail with 503s, including tiny local files like
+    // the logo. Rather than keep chasing sharp/host compatibility, we serve images
+    // unoptimized instead. Uploads are already resized client-side before they ever
+    // reach the server (see uploadFileToStorage), so this is a reasonable trade-off:
+    // slightly larger payloads in exchange for images that reliably load at all.
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
