@@ -3,36 +3,33 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Quote } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
-import type { Testimonial } from "@/lib/types";
+import { getTestimonials } from "@/lib/sanity";
 
-// Shown briefly while testimonials load, and as a fallback if the database is ever empty.
+// Shown briefly while testimonials load, and as a fallback if Sanity is ever empty.
 const fallbackTestimonials = [
   {
     quote:
       "The most beautiful hostel I've ever stayed in. It feels like a boutique hotel but with the warmth and community of a backpacker lodge. Absolutely world-class.",
-    guest_name: "Sarah Mitchell",
+    guestName: "Sarah Mitchell",
     origin: "Melbourne, Australia",
   },
 ];
 
 export default function Testimonials() {
-  const [testimonials, setTestimonials] = useState<Pick<Testimonial, "quote" | "guest_name" | "origin">[]>(
+  const [testimonials, setTestimonials] = useState<{ quote: string; guestName: string; origin: string }[]>(
     fallbackTestimonials
   );
   const [active, setActive] = useState(0);
 
   useEffect(() => {
     const fetchTestimonials = async () => {
-      const supabase = createClient();
-      const { data } = await supabase
-        .from("testimonials")
-        .select("quote, guest_name, origin")
-        .eq("is_active", true)
-        .order("sort_order", { ascending: true });
-
-      if (data && data.length > 0) {
-        setTestimonials(data);
+      try {
+        const data = await getTestimonials();
+        if (data && data.length > 0) {
+          setTestimonials(data.map(t => ({ quote: t.quote, guestName: t.guestName, origin: t.origin })));
+        }
+      } catch (err) {
+        console.error("Failed to fetch testimonials from Sanity:", err);
       }
     };
     fetchTestimonials();
@@ -69,7 +66,7 @@ export default function Testimonials() {
 
               <div className="flex flex-col items-center gap-2">
                 <p className="font-bold text-dark uppercase tracking-widest text-sm">
-                  {testimonials[active].guest_name}
+                  {testimonials[active].guestName}
                 </p>
                 <p className="text-dark/50 text-sm">
                   {testimonials[active].origin}

@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getBlogPostBySlug, urlFor } from "@/lib/sanity";
 import BlogPostClient from "./BlogPostClient";
 
 type Props = {
@@ -10,12 +10,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
 
   try {
-    const supabase = await createServerSupabaseClient();
-    const { data: post } = await supabase
-      .from("blog_posts")
-      .select("title, excerpt, cover_image, category, published_at")
-      .eq("slug", slug)
-      .single();
+    const post = await getBlogPostBySlug(slug);
 
     if (!post) {
       return {
@@ -26,6 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     const title = `${post.title} | Calcutta Backpackers Blog`;
     const description = post.excerpt || "Kolkata travel guides and stories from Calcutta Backpackers.";
+    const imageUrl = post.coverImage ? urlFor(post.coverImage).width(1200).height(630).url() : undefined;
 
     return {
       title,
@@ -34,13 +30,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title,
         description,
         type: "article",
-        images: post.cover_image ? [{ url: post.cover_image, width: 1200, height: 630 }] : undefined,
+        images: imageUrl ? [{ url: imageUrl, width: 1200, height: 630 }] : undefined,
       },
       twitter: {
         card: "summary_large_image",
         title,
         description,
-        images: post.cover_image ? [post.cover_image] : undefined,
+        images: imageUrl ? [imageUrl] : undefined,
       },
     };
   } catch {

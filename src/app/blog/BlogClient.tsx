@@ -7,24 +7,22 @@ import Link from "next/link";
 import { ArrowRight, Calendar, User } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { createClient } from "@/lib/supabase/client";
-import type { BlogPost } from "@/lib/types";
+import { getBlogPosts, urlFor } from "@/lib/sanity";
+import type { SanityBlogPost } from "@/lib/sanity/queries";
 import { format } from "date-fns";
 
 export default function BlogClient() {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [posts, setPosts] = useState<SanityBlogPost[]>([]);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
 
   useEffect(() => {
     async function fetchPosts() {
-      const { data, error } = await supabase
-        .from('blog_posts')
-        .select('*')
-        .eq('is_published', true)
-        .order('published_at', { ascending: false });
-
-      if (data) setPosts(data);
+      try {
+        const data = await getBlogPosts();
+        if (data) setPosts(data);
+      } catch (err) {
+        console.error("Failed to fetch blog posts from Sanity:", err);
+      }
       setLoading(false);
     }
     fetchPosts();
@@ -71,17 +69,17 @@ export default function BlogClient() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
               {posts.map((post, i) => (
                 <motion.article
-                  key={post.id}
+                  key={post._id}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1, duration: 0.6 }}
                   className="flex flex-col group"
                 >
-                  <Link href={`/blog/${post.slug}`} className="block relative h-[250px] w-full rounded-2xl overflow-hidden mb-6">
-                    {post.cover_image ? (
+                  <Link href={`/blog/${post.slug.current}`} className="block relative h-[250px] w-full rounded-2xl overflow-hidden mb-6">
+                    {post.coverImage ? (
                       <Image
-                        src={post.cover_image}
+                        src={urlFor(post.coverImage).width(600).url()}
                         alt={post.title}
                         fill
                         className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -98,12 +96,12 @@ export default function BlogClient() {
 
                   <div className="flex flex-col flex-grow">
                     <div className="flex items-center gap-4 text-xs text-dark/50 font-medium uppercase tracking-wider mb-3">
-                      <span className="flex items-center gap-1.5"><Calendar size={14} /> {format(new Date(post.published_at || post.created_at), 'MMM dd, yyyy')}</span>
+                      <span className="flex items-center gap-1.5"><Calendar size={14} /> {format(new Date(post.publishedAt), 'MMM dd, yyyy')}</span>
                       <span className="flex items-center gap-1.5"><User size={14} /> {post.author}</span>
                     </div>
                     
                     <h2 className="font-serif text-2xl text-dark mb-3 line-clamp-2 group-hover:text-waabi-green-dark transition-colors">
-                      <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+                      <Link href={`/blog/${post.slug.current}`}>{post.title}</Link>
                     </h2>
                     
                     <p className="text-dark/60 leading-relaxed mb-6 line-clamp-3">
@@ -111,7 +109,7 @@ export default function BlogClient() {
                     </p>
 
                     <Link 
-                      href={`/blog/${post.slug}`}
+                      href={`/blog/${post.slug.current}`}
                       className="mt-auto inline-flex items-center gap-2 text-waabi-green-dark font-semibold text-sm hover:gap-3 transition-all uppercase tracking-wider"
                     >
                       Read Story <ArrowRight size={16} />

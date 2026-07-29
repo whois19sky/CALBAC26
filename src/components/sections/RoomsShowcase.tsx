@@ -5,26 +5,24 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
-import type { Room } from "@/lib/types";
+import { getRooms, urlFor } from "@/lib/sanity";
+import type { SanityRoom } from "@/lib/sanity/queries";
 
 const WHATSAPP_LINK = "https://wa.me/919875432441?text=Hi%20Calcutta%20Backpackers!%20I'm%20interested%20in%20booking%20a%20stay.";
 
 export default function RoomsShowcase() {
-  const [rooms, setRooms] = useState<Room[]>([]);
+  const [rooms, setRooms] = useState<SanityRoom[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchRooms = async () => {
-      const supabase = createClient();
-      const { data } = await supabase
-        .from("rooms")
-        .select("*")
-        .eq("is_active", true)
-        .order("sort_order", { ascending: true });
-
-      if (data && data.length > 0) setRooms(data);
+      try {
+        const data = await getRooms();
+        if (data && data.length > 0) setRooms(data);
+      } catch (err) {
+        console.error("Failed to fetch rooms from Sanity:", err);
+      }
       setLoading(false);
     };
     fetchRooms();
@@ -77,7 +75,7 @@ export default function RoomsShowcase() {
           >
             {rooms.map((room, i) => (
               <button
-                key={room.id}
+                key={room._id}
                 onClick={() => setActiveIndex(i)}
                 aria-label={`View ${room.name}`}
                 className={`px-6 md:px-8 py-3 rounded-full text-sm font-semibold tracking-wide transition-all duration-300 ${
@@ -96,7 +94,7 @@ export default function RoomsShowcase() {
         <div className="waabi-card bg-waabi-bg p-6 md:p-8">
           <AnimatePresence mode="wait">
             <motion.div
-              key={active.id}
+              key={active._id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -105,7 +103,7 @@ export default function RoomsShowcase() {
             >
               <div className="relative h-[350px] md:h-[500px] rounded-2xl overflow-hidden">
                 <Image
-                  src={active.images?.[0] || "/images/Community.webp"}
+                  src={active.images?.[0] ? urlFor(active.images[0]).width(800).url() : "/images/Community.webp"}
                   alt={`${active.name} at Calcutta Backpackers`}
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -136,7 +134,7 @@ export default function RoomsShowcase() {
                 <div className="flex flex-col sm:flex-row items-center gap-6 pt-8 border-t border-dark/10">
                   <div>
                     <span className="text-sm text-dark/50 font-medium block">Starting from</span>
-                    <span className="text-2xl font-serif font-bold text-dark">₹{active.price_per_night.toLocaleString("en-IN")}/night</span>
+                    <span className="text-2xl font-serif font-bold text-dark">₹{active.pricePerNight.toLocaleString("en-IN")}/night</span>
                   </div>
                   <Link
                     href={WHATSAPP_LINK}

@@ -6,6 +6,7 @@ import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useSiteSettings, urlFor } from "@/lib/sanity";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -21,6 +22,8 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === "/";
+  const { settings } = useSiteSettings();
+  const logoSrc = settings?.logo ? urlFor(settings.logo).width(96).url() : "/images/logo.png";
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 80);
@@ -46,7 +49,7 @@ export default function Navbar() {
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-white">
               <Image
-                src="/images/logo.png"
+                src={logoSrc}
                 alt="Calcutta Backpackers"
                 fill
                 sizes="48px"

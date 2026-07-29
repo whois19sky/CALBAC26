@@ -1,12 +1,13 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Compass } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { getExperiences, urlFor } from "@/lib/sanity";
 
-const experiences = [
+const fallbackExperiences = [
   {
     title: "Street Food Crawl",
     category: "Culinary",
@@ -28,7 +29,30 @@ const experiences = [
 ];
 
 export default function ExperienceCarousel() {
+  const [experiences, setExperiences] = useState(fallbackExperiences);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchExperiences = async () => {
+      try {
+        const data = await getExperiences();
+        if (data && data.length > 0) {
+          setExperiences(
+            data.map(e => ({
+              title: e.title,
+              category: e.category,
+              desc: e.description,
+              img: e.image ? urlFor(e.image).width(900).url() : "/images/Commonspace.webp",
+            }))
+          );
+        }
+      } catch (err) {
+        console.error("Failed to fetch experiences from Sanity:", err);
+      }
+    };
+    fetchExperiences();
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"],

@@ -5,10 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Play, Volume2, VolumeX } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useSiteSettings, urlFor } from "@/lib/sanity";
 
 const WHATSAPP_LINK = "https://wa.me/919875432441?text=Hi%20Calcutta%20Backpackers!%20I'm%20interested%20in%20booking%20a%20stay.";
 
-const VIDEO_URL = "https://videos.pexels.com/video-files/4874712/4874712-uhd_3840_2160_25fps.mp4";
+const FALLBACK_VIDEO_URL = "https://videos.pexels.com/video-files/4874712/4874712-uhd_3840_2160_25fps.mp4";
 
 const slides = [
   {
@@ -33,6 +34,12 @@ export default function HeroSection() {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const { settings } = useSiteSettings();
+  const videoUrl = settings?.heroVideoUrl || FALLBACK_VIDEO_URL;
+  const mobileVideoUrl = settings?.heroVideoMobile?.asset?.url || "";
+  const mobileImageSrc = settings?.heroImageMobile
+    ? urlFor(settings.heroImageMobile).width(1200).url()
+    : "/images/Community.webp";
 
   useEffect(() => {
     // Skip the heavy video entirely on phones — a 4K video decode is a real
@@ -55,14 +62,28 @@ export default function HeroSection() {
       {/* Video Background (desktop only) / Static Image (mobile, for speed) */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {isMobile ? (
-          <Image
-            src="/images/Community.webp"
-            alt="Calcutta Backpackers common area"
-            fill
-            priority
-            className="object-cover"
-            sizes="100vw"
-          />
+          mobileVideoUrl ? (
+            <video
+              autoPlay
+              muted={isMuted}
+              loop
+              playsInline
+              preload="metadata"
+              onLoadedData={() => setVideoLoaded(true)}
+              className={`w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
+            >
+              <source src={mobileVideoUrl} type="video/mp4" />
+            </video>
+          ) : (
+            <Image
+              src={mobileImageSrc}
+              alt="Calcutta Backpackers common area"
+              fill
+              priority
+              className="object-cover"
+              sizes="100vw"
+            />
+          )
         ) : (
           <video
             autoPlay
@@ -73,11 +94,11 @@ export default function HeroSection() {
             onLoadedData={() => setVideoLoaded(true)}
             className={`w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
           >
-            <source src={VIDEO_URL} type="video/mp4" />
+            <source src={videoUrl} type="video/mp4" />
           </video>
         )}
         {/* Fallback gradient if video doesn't load */}
-        {!isMobile && !videoLoaded && (
+        {((isMobile && mobileVideoUrl) || !isMobile) && !videoLoaded && (
           <div className="absolute inset-0 bg-gradient-to-br from-[#12314F] via-[#1E4E78] to-[#0B1F33]" />
         )}
         {/* Overlay for readability */}
@@ -86,7 +107,7 @@ export default function HeroSection() {
       </div>
 
       {/* Mute/Unmute Button - desktop only, since mobile shows a static image instead of video */}
-      {!isMobile && (
+      {(!isMobile || mobileVideoUrl) && (
         <button
           onClick={() => setIsMuted(!isMuted)}
           className="absolute bottom-8 right-8 z-30 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all duration-300"

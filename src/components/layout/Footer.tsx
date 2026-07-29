@@ -4,8 +4,12 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Mail, ArrowRight } from "lucide-react";
+import { useSiteSettings, urlFor } from "@/lib/sanity";
 
 export default function Footer() {
+  const { settings } = useSiteSettings();
+  const logoSrc = settings?.logo ? urlFor(settings.logo).width(112).url() : "/images/logo.png";
+
   return (
     <motion.footer 
       initial={{ opacity: 0, y: 100 }}
@@ -19,7 +23,7 @@ export default function Footer() {
         <div className="flex flex-col gap-6 md:w-1/3">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center p-1 overflow-hidden shadow-sm border border-dark/5 flex-shrink-0">
-              <Image src="/images/logo.png" alt="CB Logo" width={56} height={56} className="object-contain" />
+              <Image src={logoSrc} alt="CB Logo" width={56} height={56} className="object-contain" />
             </div>
             <div>
               <h3 className="text-dark font-serif text-2xl">Calcutta Backpackers</h3>

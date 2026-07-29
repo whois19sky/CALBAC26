@@ -1,11 +1,15 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
+import { getPageSeo } from "@/lib/sanity";
 import CheckinForm from "./CheckinForm";
 
-export const metadata: Metadata = {
-  title: "Web Check-in | Calcutta Backpackers Poshtel, Kolkata",
-  description: "Skip the front-desk wait — complete your check-in online before you arrive at Calcutta Backpackers.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("Check-in").catch(() => null);
+  return {
+    title: seo?.metaTitle || "Web Check-in | Calcutta Backpackers Poshtel, Kolkata",
+    description: seo?.metaDescription || "Skip the front-desk wait — complete your check-in online before you arrive at Calcutta Backpackers.",
+  };
+}
 
 export default function CheckinPage() {
   return (

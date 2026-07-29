@@ -6,44 +6,27 @@ import Link from "next/link";
 import { ArrowRight, Clock, MapPin, Compass } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { createClient } from "@/lib/supabase/client";
+import { getExperiences, urlFor } from "@/lib/sanity";
 import { useEffect, useState } from "react";
-import type { Experience } from "@/lib/types";
+import type { SanityExperience } from "@/lib/sanity/queries";
 
 const categories = ["All", "Culinary", "Culture", "Community", "Adventure"];
 
 export default function WanderXPPage() {
-  const [experiences, setExperiences] = useState<Experience[]>([]);
-  const [partnerCompany, setPartnerCompany] = useState("[Partner Company Placeholder]");
+  const [experiences, setExperiences] = useState<SanityExperience[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const supabase = createClient();
-      
-      // Fetch active experiences
-      const { data: exps } = await supabase
-        .from('experiences')
-        .select('*')
-        .eq('is_active', true)
-        .order('sort_order', { ascending: true });
-        
-      if (exps) setExperiences(exps);
-
-      // Fetch partner company name
-      const { data: settings } = await supabase
-        .from('site_settings')
-        .select('*')
-        .eq('key', 'partners_settings')
-        .single();
-        
-      if (settings && settings.value?.company_name) {
-        setPartnerCompany(settings.value.company_name);
+      try {
+        const exps = await getExperiences();
+        if (exps) setExperiences(exps);
+      } catch (err) {
+        console.error("Failed to fetch experiences from Sanity:", err);
       }
-      
       setLoading(false);
     };
-    
+
     fetchData();
   }, []);
   return (
@@ -94,7 +77,7 @@ export default function WanderXPPage() {
           >
             <div className="text-xs font-bold uppercase tracking-widest text-white/50">In Partnership With</div>
             <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-lg border border-white/20">
-              <span className="font-serif text-white font-medium">{partnerCompany}</span>
+              <span className="font-serif text-white font-medium">Local WanderXP Partners</span>
             </div>
           </motion.div>
         </div>
@@ -111,7 +94,7 @@ export default function WanderXPPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {experiences.map((exp, i) => (
                 <motion.div
-                  key={exp.slug}
+                  key={exp._id}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -121,7 +104,7 @@ export default function WanderXPPage() {
                   <div className="relative h-[280px] overflow-hidden bg-gray-100">
                     {exp.image && (
                       <Image
-                        src={exp.image}
+                        src={urlFor(exp.image).width(600).url()}
                         alt={exp.title}
                         fill
                         sizes="(max-width: 768px) 100vw, 33vw"

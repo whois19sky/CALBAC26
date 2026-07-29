@@ -1,11 +1,15 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
+import { getPageSeo } from "@/lib/sanity";
 import BookingForm from "./BookingForm";
 
-export const metadata: Metadata = {
-  title: "Book Your Stay | Calcutta Backpackers Poshtel, Kolkata",
-  description: "Book dorms from ₹499 or private rooms from ₹1,999 direct with Calcutta Backpackers — best rate guaranteed, no OTA markup, confirmed over WhatsApp.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("Booking").catch(() => null);
+  return {
+    title: seo?.metaTitle || "Book Your Stay | Calcutta Backpackers Poshtel, Kolkata",
+    description: seo?.metaDescription || "Book dorms from ₹499 or private rooms from ₹1,999 direct with Calcutta Backpackers — best rate guaranteed, no OTA markup, confirmed over WhatsApp.",
+  };
+}
 
 export default function BookingPage() {
   return (

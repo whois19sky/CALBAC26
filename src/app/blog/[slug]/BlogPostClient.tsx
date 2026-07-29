@@ -6,36 +6,77 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Calendar, User, Tag } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { createClient } from "@/lib/supabase/client";
-import type { BlogPost } from "@/lib/types";
+import { getBlogPostBySlug, urlFor } from "@/lib/sanity";
+import type { SanityBlogPost } from "@/lib/sanity/queries";
 import { format } from "date-fns";
+
+// Extracts a YouTube video ID from any common YouTube URL format.
+function getYouTubeId(url: string): string | null {
+  const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  return match ? match[1] : null;
+}
+
+const portableTextComponents: PortableTextComponents = {
+  types: {
+    image: ({ value }) => (
+      <div className="relative w-full aspect-video rounded-2xl overflow-hidden my-8">
+        <Image src={urlFor(value).width(1000).url()} alt={value.alt || ""} fill className="object-cover" />
+      </div>
+    ),
+    youtubeEmbed: ({ value }) => {
+      const videoId = getYouTubeId(value.url || "");
+      if (!videoId) return null;
+      return (
+        <div className="relative w-full aspect-video rounded-2xl overflow-hidden my-8">
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}`}
+            title="YouTube video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full"
+          />
+        </div>
+      );
+    },
+    instagramEmbed: ({ value }) => (
+      <div className="my-8 flex justify-center">
+        <a
+          href={value.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-waabi-bg rounded-xl text-dark/70 hover:text-waabi-green-dark transition-colors border border-dark/10"
+        >
+          View this post on Instagram →
+        </a>
+      </div>
+    ),
+  },
+};
 
 export default function BlogPostClient() {
   const { slug } = useParams();
-  const [post, setPost] = useState<BlogPost | null>(null);
+  const [post, setPost] = useState<SanityBlogPost | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
 
   useEffect(() => {
     async function fetchPost() {
-      const { data, error } = await supabase
-        .from('blog_posts')
-        .select('*')
-        .eq('slug', slug)
-        .single();
-
-      if (error || !data) {
-        notFound();
-      } else {
-        setPost(data);
+      try {
+        const data = await getBlogPostBySlug(slug as string);
+        if (!data) {
+          notFound();
+        } else {
+          setPost(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch blog post from Sanity:", err);
       }
       setLoading(false);
     }
-    fetchPost();
-  }, [slug, supabase]);
+    if (slug) fetchPost();
+  }, [slug]);
 
   if (loading) {
     return (
@@ -60,7 +101,7 @@ export default function BlogPostClient() {
 
           <div className="flex items-center gap-4 text-xs text-dark/50 font-medium uppercase tracking-wider mb-6">
             <span className="flex items-center gap-1.5 text-waabi-green-dark"><Tag size={14} /> {post.category}</span>
-            <span className="flex items-center gap-1.5"><Calendar size={14} /> {format(new Date(post.published_at || post.created_at), 'MMM dd, yyyy')}</span>
+            <span className="flex items-center gap-1.5"><Calendar size={14} /> {format(new Date(post.publishedAt), 'MMM dd, yyyy')}</span>
           </div>
 
           <motion.h1 
@@ -86,7 +127,7 @@ export default function BlogPostClient() {
             </div>
           </motion.div>
 
-          {post.cover_image && (
+          {post.coverImage && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -94,7 +135,7 @@ export default function BlogPostClient() {
               className="relative w-full aspect-video rounded-3xl overflow-hidden mb-16"
             >
               <Image
-                src={post.cover_image}
+                src={urlFor(post.coverImage).width(1200).url()}
                 alt={post.title}
                 fill
                 className="object-cover"
@@ -109,7 +150,7 @@ export default function BlogPostClient() {
             transition={{ delay: 0.4 }}
             className="prose prose-lg prose-headings:font-serif prose-headings:font-medium prose-a:text-waabi-green-dark prose-img:rounded-2xl max-w-none text-dark/80"
           >
-            <ReactMarkdown>{post.content}</ReactMarkdown>
+            <PortableText value={post.content} components={portableTextComponents} />
           </motion.div>
           
         </div>

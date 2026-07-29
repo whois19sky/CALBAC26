@@ -7,29 +7,28 @@ import Link from "next/link";
 import { ArrowRight, Check, Star, Users, Award, Wifi, Wind, Lock, Tv, UtensilsCrossed, WashingMachine } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { createClient } from "@/lib/supabase/client";
-import type { Room } from "@/lib/types";
+import { getRooms, urlFor } from "@/lib/sanity";
+import type { SanityRoom } from "@/lib/sanity/queries";
 
 export default function TheNestPage() {
-  const [rooms, setRooms] = useState<Room[]>([]);
+  const [rooms, setRooms] = useState<SanityRoom[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchRooms = async () => {
-      const supabase = createClient();
-      const { data } = await supabase
-        .from("rooms")
-        .select("*")
-        .eq("is_active", true)
-        .order("sort_order", { ascending: true });
-      if (data) setRooms(data);
+      try {
+        const data = await getRooms();
+        if (data) setRooms(data);
+      } catch (err) {
+        console.error("Failed to fetch rooms from Sanity:", err);
+      }
       setLoading(false);
     };
     fetchRooms();
   }, []);
 
   const lowestPrice = rooms.length > 0
-    ? Math.min(...rooms.map((r) => r.price_per_night))
+    ? Math.min(...rooms.map((r) => r.pricePerNight))
     : null;
 
   const stats = [
@@ -170,7 +169,7 @@ export default function TheNestPage() {
             ) : (
             rooms.map((room, i) => (
               <motion.div
-                key={room.id}
+                key={room._id}
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -180,7 +179,7 @@ export default function TheNestPage() {
                 <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 ${i % 2 === 1 ? 'md:direction-rtl' : ''}`}>
                   <div className={`relative h-[300px] md:h-[450px] rounded-2xl overflow-hidden ${i % 2 === 1 ? 'md:order-2' : ''}`}>
                     <Image
-                      src={room.images?.[0] || "/images/Community.webp"}
+                      src={room.images?.[0] ? urlFor(room.images[0]).width(900).url() : "/images/Community.webp"}
                       alt={room.name}
                       fill
                       sizes="(max-width: 768px) 100vw, 50vw"
@@ -212,10 +211,10 @@ export default function TheNestPage() {
                     <div className="flex flex-col sm:flex-row items-center gap-6 pt-8 border-t border-dark/10">
                       <div>
                         <span className="text-sm text-dark/50 font-medium block">Starting from</span>
-                        <span className="text-3xl font-serif font-bold text-dark">₹{room.price_per_night.toLocaleString("en-IN")}<span className="text-base font-sans font-normal text-dark/50">/night</span></span>
+                        <span className="text-3xl font-serif font-bold text-dark">₹{room.pricePerNight.toLocaleString("en-IN")}<span className="text-base font-sans font-normal text-dark/50">/night</span></span>
                       </div>
                       <Link
-                        href={`/booking?room=${room.id}`}
+                        href={`/booking?room=${room._id}`}
                         className="btn-primary sm:ml-auto w-full sm:w-auto shadow-lg"
                       >
                         Book This Room <ArrowRight size={16} />
