@@ -107,7 +107,7 @@ export default function BookingsManager() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <p className="font-medium text-dark bg-gray-100 px-2 py-1 rounded-md inline-block mb-2">{booking.room?.name || 'Unknown'}</p>
+                        <p className="font-medium text-dark bg-gray-100 px-2 py-1 rounded-md inline-block mb-2">{booking.room_name || booking.room?.name || 'Unknown'}</p>
                         <div className="flex items-center gap-2 text-dark/70 text-xs font-medium">
                           <span className="text-green-600">{format(new Date(booking.check_in), 'MMM dd')}</span>
                           <span>→</span>

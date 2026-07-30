@@ -19,6 +19,7 @@ export type Booking = {
   guest_email: string
   guest_phone: string
   room_id: string
+  room_name: string
   room?: Room
   check_in: string
   check_out: string

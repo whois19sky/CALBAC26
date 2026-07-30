@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS bookings (
   guest_email TEXT NOT NULL,
   guest_phone TEXT NOT NULL,
   room_id UUID REFERENCES rooms(id) ON DELETE SET NULL,
+  room_name TEXT DEFAULT '',
   check_in DATE NOT NULL,
   check_out DATE NOT NULL,
   guests_count INTEGER DEFAULT 1,

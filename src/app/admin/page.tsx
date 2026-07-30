@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { getRooms } from "@/lib/sanity";
 import { Users, BedDouble, CheckCircle2, TrendingUp, Calendar as CalendarIcon, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -32,7 +33,9 @@ export default function AdminDashboard() {
         { count: checkinsToday },
         { data: bookingsData },
         { data: checkinsData },
-        { data: roomsData },
+        // Guests currently staying: booking spans today, and isn't cancelled.
+        // Includes 'pending' since nothing in the current flow auto-confirms
+        // bookings - excluding pending would make occupancy always read ~0%.
         { data: occupiedTodayData }
       ] = await Promise.all([
         supabase.from('bookings').select('*', { count: 'exact', head: true }),
@@ -40,13 +43,18 @@ export default function AdminDashboard() {
         supabase.from('bookings').select('*', { count: 'exact', head: true }).eq('check_in', today),
         supabase.from('bookings').select('*, room:rooms(*)').order('created_at', { ascending: false }).limit(5),
         supabase.from('checkins').select('*, booking:bookings(*)').order('created_at', { ascending: false }).limit(5),
-        supabase.from('rooms').select('capacity').eq('is_active', true),
-        // Guests currently staying: booking spans today, and isn't cancelled
-        supabase.from('bookings').select('guests_count').lte('check_in', today).gt('check_out', today).in('status', ['confirmed', 'checked_in'])
+        supabase.from('bookings').select('guests_count').lte('check_in', today).gt('check_out', today).in('status', ['confirmed', 'pending', 'checked_in'])
       ]);
 
-      // Occupancy = guests currently staying / total bed capacity across active rooms
-      const totalCapacity = (roomsData || []).reduce((sum, r) => sum + (r.capacity || 0), 0);
+      // Occupancy = guests currently staying / total bed capacity across active rooms.
+      // Room capacity now lives in Sanity (Supabase's rooms table is deprecated).
+      let totalCapacity = 0;
+      try {
+        const sanityRooms = await getRooms();
+        totalCapacity = sanityRooms.reduce((sum, r) => sum + (r.capacity || 0), 0);
+      } catch (err) {
+        console.error("Failed to fetch room capacity from Sanity:", err);
+      }
       const guestsStaying = (occupiedTodayData || []).reduce((sum, b) => sum + (b.guests_count || 0), 0);
       const occupancyRate = totalCapacity > 0
         ? `${Math.min(100, Math.round((guestsStaying / totalCapacity) * 100))}%`
@@ -135,7 +143,7 @@ export default function AdminDashboard() {
                         <p className="text-xs text-dark/50">{format(new Date(booking.check_in), 'MMM dd')} - {format(new Date(booking.check_out), 'MMM dd')}</p>
                       </td>
                       <td className="px-6 py-4">
-                        <p className="text-dark/80">{booking.room?.name || 'Unknown'}</p>
+                        <p className="text-dark/80">{booking.room_name || booking.room?.name || 'Unknown'}</p>
                         <p className="text-xs text-dark/50">{booking.guests_count} Guests</p>
                       </td>
                       <td className="px-6 py-4">

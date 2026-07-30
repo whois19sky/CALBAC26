@@ -16,7 +16,7 @@ export default function CheckinsManager() {
 
   const fetchCheckins = async () => {
     setLoading(true);
-    let query = supabase.from('checkins').select('*, booking:bookings(check_in, check_out, room:rooms(name))').order('created_at', { ascending: false });
+    let query = supabase.from('checkins').select('*, booking:bookings(check_in, check_out, room_name, room:rooms(name))').order('created_at', { ascending: false });
     
     if (search) {
       query = query.ilike('full_name', `%${search}%`);
@@ -133,7 +133,7 @@ export default function CheckinsManager() {
                       <td className="px-6 py-4">
                         {checkin.booking ? (
                           <>
-                            <p className="text-sm font-medium text-dark">{(checkin.booking as any).room?.name}</p>
+                            <p className="text-sm font-medium text-dark">{(checkin.booking as any).room_name || (checkin.booking as any).room?.name}</p>
                             <div className="text-xs text-dark/60 mt-1">
                               {(() => {
                                 const ci = (checkin.booking as any).check_in;

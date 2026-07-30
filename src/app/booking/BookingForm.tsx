@@ -126,7 +126,12 @@ export default function BookingPage() {
         guest_name: guestDetails.name,
         guest_email: guestDetails.email,
         guest_phone: guestDetails.phone,
-        room_id: selectedRoom.id.startsWith("fallback-") ? null : selectedRoom.id,
+        // room_id used to link to Supabase's rooms table, but real room content
+        // now lives in Sanity (different ID format entirely) - that table is
+        // effectively deprecated. Always null here to avoid a foreign-key error;
+        // room_name (below) is now the reliable source of which room was booked.
+        room_id: null,
+        room_name: selectedRoom.name,
         check_in: checkInDate,
         check_out: checkOutDate,
         guests_count: guestsCount,
