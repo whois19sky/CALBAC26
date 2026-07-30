@@ -1,0 +1,816 @@
+[
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "name",
+        "type": "string",
+        "title": "Room Name"
+      },
+      {
+        "options": {
+          "source": "name"
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "name": "tagline",
+        "type": "string"
+      },
+      {
+        "name": "description",
+        "type": "text"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 0
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "pricePerNight",
+        "type": "number",
+        "title": "Price per Night (₹)"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 1
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "capacity",
+        "type": "number",
+        "title": "Capacity (Guests)"
+      },
+      {
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "features",
+        "type": "array"
+      },
+      {
+        "of": [
+          {
+            "options": {
+              "hotspot": true
+            },
+            "type": "image"
+          }
+        ],
+        "name": "images",
+        "type": "array"
+      },
+      {
+        "initialValue": true,
+        "name": "isActive",
+        "type": "boolean",
+        "title": "Active (visible on site)"
+      },
+      {
+        "name": "sortOrder",
+        "type": "number"
+      }
+    ],
+    "name": "room",
+    "type": "document",
+    "title": "Rooms"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "title",
+        "type": "string"
+      },
+      {
+        "options": {
+          "source": "title"
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "rows": 2,
+        "name": "excerpt",
+        "type": "text",
+        "title": "Excerpt (SEO description)"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "name": "coverImage",
+        "type": "image"
+      },
+      {
+        "initialValue": "Calcutta Backpackers",
+        "name": "author",
+        "type": "string"
+      },
+      {
+        "name": "category",
+        "type": "string"
+      },
+      {
+        "of": [
+          {
+            "marks": {
+              "annotations": [
+                {
+                  "i18nTitleKey": "inputs.portable-text.annotation.link",
+                  "options": {
+                    "modal": {
+                      "type": "popover"
+                    }
+                  },
+                  "fields": [
+                    {
+                      "validation": [
+                        {
+                          "rules": [
+                            {
+                              "flag": "uri",
+                              "constraint": {
+                                "options": {
+                                  "scheme": [
+                                    "/^http$/",
+                                    "/^https$/",
+                                    "/^tel$/",
+                                    "/^mailto$/"
+                                  ],
+                                  "allowRelative": true,
+                                  "relativeOnly": false,
+                                  "allowCredentials": false
+                                }
+                              }
+                            }
+                          ],
+                          "level": "error"
+                        }
+                      ],
+                      "description": "A valid web, email, phone, or relative link.",
+                      "name": "href",
+                      "type": "url",
+                      "title": "Link"
+                    }
+                  ],
+                  "name": "link",
+                  "type": "object"
+                }
+              ],
+              "decorators": [
+                {
+                  "value": "strong",
+                  "title": "Strong"
+                },
+                {
+                  "value": "em",
+                  "title": "Italic"
+                },
+                {
+                  "value": "code",
+                  "title": "Code"
+                },
+                {
+                  "value": "underline",
+                  "title": "Underline"
+                },
+                {
+                  "value": "strike-through",
+                  "title": "Strike"
+                }
+              ]
+            },
+            "lists": [
+              {
+                "value": "bullet",
+                "title": "Bulleted list"
+              },
+              {
+                "value": "number",
+                "title": "Numbered list"
+              }
+            ],
+            "styles": [
+              {
+                "value": "normal",
+                "title": "Normal"
+              },
+              {
+                "value": "h1",
+                "title": "Heading 1"
+              },
+              {
+                "value": "h2",
+                "title": "Heading 2"
+              },
+              {
+                "value": "h3",
+                "title": "Heading 3"
+              },
+              {
+                "value": "h4",
+                "title": "Heading 4"
+              },
+              {
+                "value": "h5",
+                "title": "Heading 5"
+              },
+              {
+                "value": "h6",
+                "title": "Heading 6"
+              },
+              {
+                "value": "blockquote",
+                "title": "Quote"
+              }
+            ],
+            "of": [],
+            "type": "block"
+          },
+          {
+            "options": {
+              "hotspot": true
+            },
+            "type": "image"
+          },
+          {
+            "fields": [
+              {
+                "validation": [
+                  {
+                    "rules": [
+                      {
+                        "flag": "uri",
+                        "constraint": {
+                          "options": {
+                            "scheme": [
+                              "/^http$/",
+                              "/^https$/"
+                            ],
+                            "allowRelative": false,
+                            "relativeOnly": false,
+                            "allowCredentials": false
+                          }
+                        }
+                      }
+                    ],
+                    "level": "error"
+                  }
+                ],
+                "name": "url",
+                "type": "url",
+                "title": "YouTube URL"
+              }
+            ],
+            "type": "object",
+            "name": "youtubeEmbed",
+            "title": "YouTube Video"
+          },
+          {
+            "fields": [
+              {
+                "validation": [
+                  {
+                    "rules": [
+                      {
+                        "flag": "uri",
+                        "constraint": {
+                          "options": {
+                            "scheme": [
+                              "/^http$/",
+                              "/^https$/"
+                            ],
+                            "allowRelative": false,
+                            "relativeOnly": false,
+                            "allowCredentials": false
+                          }
+                        }
+                      }
+                    ],
+                    "level": "error"
+                  }
+                ],
+                "name": "url",
+                "type": "url",
+                "title": "Instagram URL"
+              }
+            ],
+            "type": "object",
+            "name": "instagramEmbed",
+            "title": "Instagram Post"
+          }
+        ],
+        "name": "content",
+        "type": "array"
+      },
+      {
+        "initialValue": false,
+        "name": "isPublished",
+        "type": "boolean",
+        "title": "Published"
+      },
+      {
+        "name": "publishedAt",
+        "type": "datetime"
+      }
+    ],
+    "name": "blogPost",
+    "type": "document",
+    "title": "Blog Posts"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "guestName",
+        "type": "string"
+      },
+      {
+        "name": "origin",
+        "type": "string",
+        "title": "Origin (City, Country)"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "quote",
+        "type": "text"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 1
+              },
+              {
+                "flag": "max",
+                "constraint": 5
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "rating",
+        "type": "number",
+        "title": "Rating (1-5)"
+      },
+      {
+        "initialValue": true,
+        "name": "isActive",
+        "type": "boolean",
+        "title": "Active (visible on site)"
+      },
+      {
+        "name": "sortOrder",
+        "type": "number"
+      }
+    ],
+    "name": "testimonial",
+    "type": "document",
+    "title": "Testimonials"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "title",
+        "type": "string"
+      },
+      {
+        "options": {
+          "source": "title"
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "name": "category",
+        "type": "string"
+      },
+      {
+        "name": "description",
+        "type": "text"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "name": "image",
+        "type": "image"
+      },
+      {
+        "name": "price",
+        "type": "number",
+        "title": "Price (₹, 0 = free)"
+      },
+      {
+        "name": "duration",
+        "type": "string"
+      },
+      {
+        "name": "sortOrder",
+        "type": "number"
+      }
+    ],
+    "name": "experience",
+    "type": "document",
+    "title": "Experiences (WanderXP)"
+  },
+  {
+    "fields": [
+      {
+        "name": "logo",
+        "type": "image"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "uri",
+                "constraint": {
+                  "options": {
+                    "scheme": [
+                      "/^http$/",
+                      "/^https$/"
+                    ],
+                    "allowRelative": false,
+                    "relativeOnly": false,
+                    "allowCredentials": false
+                  }
+                }
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "heroVideoUrl",
+        "type": "url",
+        "title": "Hero Video URL (Desktop)"
+      },
+      {
+        "options": {
+          "accept": "video/mp4"
+        },
+        "name": "heroVideoMobile",
+        "type": "file",
+        "title": "Hero Video (Mobile - upload directly, keep under ~6MB)"
+      },
+      {
+        "name": "heroImageMobile",
+        "type": "image",
+        "title": "Hero Image (Mobile fallback, used only if no mobile video is set)"
+      },
+      {
+        "name": "homeHeroTitle1",
+        "type": "string",
+        "title": "Home: Hero Slide 1 Title"
+      },
+      {
+        "rows": 2,
+        "name": "homeHeroSubtitle1",
+        "type": "text",
+        "title": "Home: Hero Slide 1 Subtitle"
+      },
+      {
+        "name": "homeHeroTitle2",
+        "type": "string",
+        "title": "Home: Hero Slide 2 Title"
+      },
+      {
+        "rows": 2,
+        "name": "homeHeroSubtitle2",
+        "type": "text",
+        "title": "Home: Hero Slide 2 Subtitle"
+      },
+      {
+        "name": "homeHeroTitle3",
+        "type": "string",
+        "title": "Home: Hero Slide 3 Title"
+      },
+      {
+        "rows": 2,
+        "name": "homeHeroSubtitle3",
+        "type": "text",
+        "title": "Home: Hero Slide 3 Subtitle"
+      },
+      {
+        "name": "aboutHeading",
+        "type": "string",
+        "title": "About Section: Heading"
+      },
+      {
+        "name": "aboutBody",
+        "type": "text",
+        "title": "About Section: Body Text"
+      },
+      {
+        "name": "whatsappNumber",
+        "type": "string",
+        "title": "WhatsApp Number (for bookings)"
+      },
+      {
+        "name": "contactEmail",
+        "type": "string"
+      },
+      {
+        "rows": 2,
+        "name": "contactAddress",
+        "type": "text",
+        "title": "Address"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "uri",
+                "constraint": {
+                  "options": {
+                    "scheme": [
+                      "/^http$/",
+                      "/^https$/"
+                    ],
+                    "allowRelative": false,
+                    "relativeOnly": false,
+                    "allowCredentials": false
+                  }
+                }
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "instagramUrl",
+        "type": "url",
+        "title": "Instagram URL"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "uri",
+                "constraint": {
+                  "options": {
+                    "scheme": [
+                      "/^http$/",
+                      "/^https$/"
+                    ],
+                    "allowRelative": false,
+                    "relativeOnly": false,
+                    "allowCredentials": false
+                  }
+                }
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "facebookUrl",
+        "type": "url",
+        "title": "Facebook URL"
+      },
+      {
+        "name": "defaultMetaTitle",
+        "type": "string",
+        "title": "Default Meta Title (fallback)"
+      },
+      {
+        "rows": 2,
+        "name": "defaultMetaDescription",
+        "type": "text",
+        "title": "Default Meta Description (fallback)"
+      },
+      {
+        "name": "primaryNeighborhood",
+        "type": "string",
+        "title": "Primary Neighborhood (e.g. \"Park Street Area, Central Kolkata\")"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "uri",
+                "constraint": {
+                  "options": {
+                    "scheme": [
+                      "/^http$/",
+                      "/^https$/"
+                    ],
+                    "allowRelative": false,
+                    "relativeOnly": false,
+                    "allowCredentials": false
+                  }
+                }
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "googleMapsUrl",
+        "type": "url",
+        "title": "Google Maps Link (share/embed URL for your listing)"
+      },
+      {
+        "name": "latitude",
+        "type": "number"
+      },
+      {
+        "name": "longitude",
+        "type": "number"
+      },
+      {
+        "name": "checkInTime",
+        "type": "string",
+        "title": "Check-in Time (e.g. \"14:00\")"
+      },
+      {
+        "name": "checkOutTime",
+        "type": "string",
+        "title": "Check-out Time (e.g. \"11:00\")"
+      },
+      {
+        "name": "priceRangeLow",
+        "type": "number",
+        "title": "Lowest Price (₹, for price range signal)"
+      },
+      {
+        "name": "priceRangeHigh",
+        "type": "number",
+        "title": "Highest Price (₹, for price range signal)"
+      },
+      {
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "coreAmenities",
+        "type": "array",
+        "title": "Core Amenities (e.g. Free WiFi, AC, 24/7 Front Desk, Lockers)"
+      },
+      {
+        "of": [
+          {
+            "fields": [
+              {
+                "options": {
+                  "list": [
+                    "Homepage",
+                    "The Nest XP",
+                    "WanderXP",
+                    "The Social",
+                    "Blog",
+                    "Booking",
+                    "Check-in"
+                  ]
+                },
+                "name": "page",
+                "type": "string"
+              },
+              {
+                "name": "metaTitle",
+                "type": "string"
+              },
+              {
+                "rows": 2,
+                "name": "metaDescription",
+                "type": "text"
+              }
+            ],
+            "type": "object",
+            "name": "pageSeo"
+          }
+        ],
+        "name": "seo",
+        "type": "array",
+        "title": "SEO Per Page"
+      }
+    ],
+    "name": "siteSettings",
+    "type": "document"
+  }
+]
