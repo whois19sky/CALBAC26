@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Play, Volume2, VolumeX } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSiteSettings, urlFor } from "@/lib/sanity";
+import { useSiteSettings, urlFor, hasValidImage } from "@/lib/sanity";
 
 const WHATSAPP_LINK = "https://wa.me/919875432441?text=Hi%20Calcutta%20Backpackers!%20I'm%20interested%20in%20booking%20a%20stay.";
 
@@ -37,8 +37,8 @@ export default function HeroSection() {
   const { settings } = useSiteSettings();
   const videoUrl = settings?.heroVideoUrl || FALLBACK_VIDEO_URL;
   const mobileVideoUrl = settings?.heroVideoMobile?.asset?.url || "";
-  const mobileImageSrc = settings?.heroImageMobile
-    ? urlFor(settings.heroImageMobile).width(1200).url()
+  const mobileImageSrc = hasValidImage(settings?.heroImageMobile)
+    ? urlFor(settings!.heroImageMobile).width(1200).url()
     : "/images/Community.webp";
 
   useEffect(() => {

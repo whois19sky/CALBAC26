@@ -4,11 +4,11 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Mail, ArrowRight } from "lucide-react";
-import { useSiteSettings, urlFor } from "@/lib/sanity";
+import { useSiteSettings, urlFor, hasValidImage } from "@/lib/sanity";
 
 export default function Footer() {
   const { settings } = useSiteSettings();
-  const logoSrc = settings?.logo ? urlFor(settings.logo).width(112).url() : "/images/logo.png";
+  const logoSrc = hasValidImage(settings?.logo) ? urlFor(settings!.logo).width(112).url() : "/images/logo.png";
 
   return (
     <motion.footer 

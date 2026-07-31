@@ -6,7 +6,7 @@ import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useSiteSettings, urlFor } from "@/lib/sanity";
+import { useSiteSettings, urlFor, hasValidImage } from "@/lib/sanity";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -42,7 +42,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const isHomePage = pathname === "/";
   const { settings } = useSiteSettings();
-  const logoSrc = settings?.logo ? urlFor(settings.logo).width(96).url() : "/images/logo.png";
+  const logoSrc = hasValidImage(settings?.logo) ? urlFor(settings!.logo).width(96).url() : "/images/logo.png";
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 80);
