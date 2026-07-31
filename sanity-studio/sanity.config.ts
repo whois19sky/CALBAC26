@@ -8,7 +8,7 @@ export default defineConfig({
   title: 'Calcutta Backpackers CMS',
 
   // Replace with your actual project ID once you run `sanity init`
-  projectId: 'YOUR_PROJECT_ID',
+  projectId: 'nyxl5v82',
   dataset: 'production',
 
   plugins: [structureTool(), visionTool()],

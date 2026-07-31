@@ -67,6 +67,17 @@ export type SanitySiteSettings = {
   contactAddress: string;
   instagramUrl: string;
   facebookUrl: string;
+  defaultMetaTitle: string;
+  defaultMetaDescription: string;
+  primaryNeighborhood: string;
+  googleMapsUrl: string;
+  latitude: number;
+  longitude: number;
+  checkInTime: string;
+  checkOutTime: string;
+  priceRangeLow: number;
+  priceRangeHigh: number;
+  coreAmenities: string[];
   seo: Array<{ page: string; metaTitle: string; metaDescription: string }>;
 };
 
@@ -116,6 +127,15 @@ export async function getSiteSettings(): Promise<SanitySiteSettings | null> {
 export async function getPageSeo(pageName: string): Promise<{ metaTitle: string; metaDescription: string } | null> {
   const settings = await getSiteSettings();
   const match = settings?.seo?.find((s) => s.page === pageName);
-  if (!match || (!match.metaTitle && !match.metaDescription)) return null;
-  return match;
+  if (match && (match.metaTitle || match.metaDescription)) return match;
+
+  // No page-specific SEO set - fall back to the site-wide default, if set.
+  if (settings?.defaultMetaTitle || settings?.defaultMetaDescription) {
+    return {
+      metaTitle: settings.defaultMetaTitle,
+      metaDescription: settings.defaultMetaDescription,
+    };
+  }
+
+  return null;
 }

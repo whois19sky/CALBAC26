@@ -25,6 +25,23 @@ export default {
     { name: 'instagramUrl', title: 'Instagram URL', type: 'url' },
     { name: 'facebookUrl', title: 'Facebook URL', type: 'url' },
 
+    // --- Default/Fallback SEO (used when a page has no custom SEO entry below) ---
+    { name: 'defaultMetaTitle', title: 'Default Meta Title (fallback)', type: 'string' },
+    { name: 'defaultMetaDescription', title: 'Default Meta Description (fallback)', type: 'text', rows: 2 },
+
+    // --- Local SEO / Entity signals (for AI search + Google Maps discovery) ---
+    { name: 'primaryNeighborhood', title: 'Primary Neighborhood (e.g. "Park Street Area, Central Kolkata")', type: 'string' },
+    { name: 'googleMapsUrl', title: 'Google Maps Link (share/embed URL for your listing)', type: 'url' },
+    { name: 'latitude', title: 'Latitude', type: 'number' },
+    { name: 'longitude', title: 'Longitude', type: 'number' },
+
+    // --- Structured data facts (powers LodgingBusiness/Hostel schema markup) ---
+    { name: 'checkInTime', title: 'Check-in Time (e.g. "14:00")', type: 'string' },
+    { name: 'checkOutTime', title: 'Check-out Time (e.g. "11:00")', type: 'string' },
+    { name: 'priceRangeLow', title: 'Lowest Price (₹, for price range signal)', type: 'number' },
+    { name: 'priceRangeHigh', title: 'Highest Price (₹, for price range signal)', type: 'number' },
+    { name: 'coreAmenities', title: 'Core Amenities (e.g. Free WiFi, AC, 24/7 Front Desk, Lockers)', type: 'array', of: [{ type: 'string' }] },
+
     {
       name: 'seo',
       title: 'SEO Per Page',

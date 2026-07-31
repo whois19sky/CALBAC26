@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import Analytics from "@/components/Analytics";
+import { getSiteSettings } from "@/lib/sanity";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -13,90 +15,115 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://www.calcuttabackpackers.com"),
-  title: "Calcutta Backpackers | Best Poshtel & Budget Hostel in Kolkata",
-  description:
-    "Kolkata's top-rated poshtel — stylish dorms from ₹499/night, private rooms, free wifi, and WanderXP experiences (street food crawls, heritage walks, rooftop nights). Real value, zero pretension. Book direct on WhatsApp.",
-  keywords: [
-    "poshtel kolkata",
-    "hostel kolkata",
-    "budget hostel kolkata",
-    "cheap hostel kolkata",
-    "backpackers hostel kolkata",
-    "best hostel kolkata",
-    "hostel near sudder street",
-    "hostel near park street",
-    "dorms kolkata",
-    "private room kolkata cheap",
-    "solo travel kolkata",
-    "kolkata street food tour",
-    "heritage walk kolkata",
-    "things to do in kolkata",
-    "backpacking india",
-    "gen z travel kolkata",
-    "affordable stay kolkata",
-    "social hostel india",
-  ],
-  icons: {
-    icon: "/images/logo.png",
-    shortcut: "/images/logo.png",
-    apple: "/images/logo.png",
-  },
-  openGraph: {
-    title: "Calcutta Backpackers | Kolkata's Best Value Poshtel",
-    description: "Dorms from ₹499. Private rooms from ₹1,999. Free wifi, real community, and WanderXP experiences that don't feel like a tour. This is Kolkata, done right — and done affordable.",
-    url: "https://www.calcuttabackpackers.com",
-    siteName: "Calcutta Backpackers",
-    images: [
-      {
-        url: "/images/Community.webp",
-        width: 1200,
-        height: 630,
-      }
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings().catch(() => null);
+
+  const title = settings?.defaultMetaTitle || "Calcutta Backpackers | Best Poshtel & Budget Hostel in Kolkata";
+  const description = settings?.defaultMetaDescription ||
+    "Kolkata's top-rated poshtel — stylish dorms from ₹499/night, private rooms, free wifi, and WanderXP experiences (street food crawls, heritage walks, rooftop nights). Real value, zero pretension. Book direct on WhatsApp.";
+
+  return {
+    metadataBase: new URL("https://www.calcuttabackpackers.com"),
+    title,
+    description,
+    keywords: [
+      "poshtel kolkata",
+      "hostel kolkata",
+      "budget hostel kolkata",
+      "cheap hostel kolkata",
+      "backpackers hostel kolkata",
+      "best hostel kolkata",
+      "hostel near sudder street",
+      "hostel near park street",
+      "dorms kolkata",
+      "private room kolkata cheap",
+      "solo travel kolkata",
+      "kolkata street food tour",
+      "heritage walk kolkata",
+      "things to do in kolkata",
+      "backpacking india",
+      "gen z travel kolkata",
+      "affordable stay kolkata",
+      "social hostel india",
     ],
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Calcutta Backpackers | Kolkata's Best Value Poshtel",
-    description: "Dorms from ₹499. Free wifi, real community, and WanderXP experiences worth posting about. This is Kolkata, done right — and done affordable.",
-    images: ["/images/Community.webp"],
-  }
-};
+    icons: {
+      icon: "/images/logo.png",
+      shortcut: "/images/logo.png",
+      apple: "/images/logo.png",
+    },
+    openGraph: {
+      title,
+      description,
+      url: "https://www.calcuttabackpackers.com",
+      siteName: "Calcutta Backpackers",
+      images: [
+        {
+          url: "/images/Community.webp",
+          width: 1200,
+          height: 630,
+        }
+      ],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/images/Community.webp"],
+    }
+  };
+}
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "LodgingBusiness",
-  "name": "Calcutta Backpackers",
-  "description": "A value-for-money poshtel in Kolkata offering dorms, private rooms, and curated WanderXP local experiences for backpackers and solo travelers.",
-  "url": "https://www.calcuttabackpackers.com",
-  "image": "https://www.calcuttabackpackers.com/images/Community.webp",
-  "priceRange": "₹399 - ₹3,499",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "6/27a, Pashupati Bhattacharya Road",
-    "addressLocality": "Kolkata",
-    "postalCode": "700034",
-    "addressCountry": "IN"
-  },
-  "telephone": "+91-98754-32441",
-  "email": "bookingcalcuttabackpackers@gmail.com",
-  "checkinTime": "14:00",
-  "checkoutTime": "11:00",
-  "amenityFeature": [
-    { "@type": "LocationFeatureSpecification", "name": "Free WiFi", "value": true },
-    { "@type": "LocationFeatureSpecification", "name": "Air Conditioning", "value": true },
-    { "@type": "LocationFeatureSpecification", "name": "Lockers", "value": true },
-    { "@type": "LocationFeatureSpecification", "name": "Guided Local Experiences", "value": true }
-  ]
-};
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const settings = await getSiteSettings().catch(() => null);
+
+  const structuredData: any = {
+    "@context": "https://schema.org",
+    "@type": "LodgingBusiness",
+    "name": "Calcutta Backpackers",
+    "description": "A value-for-money poshtel in Kolkata offering dorms, private rooms, and curated WanderXP local experiences for backpackers and solo travelers.",
+    "url": "https://www.calcuttabackpackers.com",
+    "image": "https://www.calcuttabackpackers.com/images/Community.webp",
+    "priceRange": settings?.priceRangeLow && settings?.priceRangeHigh
+      ? `₹${settings.priceRangeLow} - ₹${settings.priceRangeHigh}`
+      : "₹399 - ₹4,599",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "6/27a, Pashupati Bhattacharya Road",
+      "addressLocality": "Kolkata",
+      "postalCode": "700034",
+      "addressCountry": "IN"
+    },
+    "telephone": "+91-98754-32441",
+    "email": "bookingcalcuttabackpackers@gmail.com",
+    "checkinTime": settings?.checkInTime || "14:00",
+    "checkoutTime": settings?.checkOutTime || "11:00",
+    "amenityFeature": (settings?.coreAmenities && settings.coreAmenities.length > 0
+      ? settings.coreAmenities
+      : ["Free WiFi", "Air Conditioning", "Lockers", "Guided Local Experiences"]
+    ).map((name) => ({ "@type": "LocationFeatureSpecification", name, value: true })),
+  };
+
+  // Only add geo/neighborhood fields if actually set in Sanity - fabricating
+  // coordinates would be worse than omitting them.
+  if (settings?.latitude && settings?.longitude) {
+    structuredData.geo = {
+      "@type": "GeoCoordinates",
+      "latitude": settings.latitude,
+      "longitude": settings.longitude,
+    };
+  }
+  if (settings?.primaryNeighborhood) {
+    structuredData.address.addressRegion = settings.primaryNeighborhood;
+  }
+  if (settings?.googleMapsUrl) {
+    structuredData.hasMap = settings.googleMapsUrl;
+  }
+
   return (
     <html
       lang="en"
@@ -122,6 +149,7 @@ export default function RootLayout({
           }} 
         />
         <main className="flex-grow">{children}</main>
+        <Analytics />
       </body>
     </html>
   );
