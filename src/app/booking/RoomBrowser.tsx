@@ -7,6 +7,15 @@ import { Check } from "lucide-react";
 import { urlFor } from "@/lib/sanity";
 import type { SanityRoom } from "@/lib/sanity/queries";
 
+// Truncates at the last complete word within the limit, instead of CSS
+// line-clamp which cuts wherever a line happens to end, often mid-word.
+function truncateAtWord(text: string, maxLength: number): string {
+  if (!text || text.length <= maxLength) return text;
+  const truncated = text.slice(0, maxLength);
+  const lastSpace = truncated.lastIndexOf(" ");
+  return (lastSpace > 0 ? truncated.slice(0, lastSpace) : truncated) + "…";
+}
+
 export default function RoomBrowser({
   rooms,
   selectedRoom,
@@ -23,13 +32,13 @@ export default function RoomBrowser({
   return (
     <div>
       {/* Room tabs */}
-      <div className="bg-waabi-bg p-1.5 rounded-full flex gap-1 shadow-sm border border-dark/5 flex-wrap justify-center mb-6">
+      <div className="bg-waabi-bg p-1.5 rounded-full flex gap-1 shadow-sm border border-dark/5 overflow-x-auto mb-6 scrollbar-hide">
         {rooms.map((room, i) => (
           <button
             key={room._id}
             type="button"
             onClick={() => setActiveIndex(i)}
-            className={`px-4 md:px-5 py-2.5 rounded-full text-xs md:text-sm font-semibold tracking-wide transition-all duration-300 relative ${
+            className={`px-4 md:px-5 py-2.5 rounded-full text-xs md:text-sm font-semibold tracking-wide transition-all duration-300 relative whitespace-nowrap flex-shrink-0 ${
               activeIndex === i ? "bg-white text-dark shadow-sm" : "text-dark/50 hover:text-dark"
             }`}
           >
@@ -68,7 +77,7 @@ export default function RoomBrowser({
               <span className="inline-block px-3 py-1 bg-waabi-green/30 text-waabi-green-dark text-xs font-bold uppercase tracking-widest rounded-full w-fit mb-3">
                 {active.tagline}
               </span>
-              <p className="text-dark/70 text-sm leading-relaxed mb-4 line-clamp-3">{active.description}</p>
+              <p className="text-dark/70 text-sm leading-relaxed mb-4">{truncateAtWord(active.description, 140)}</p>
 
               <div className="grid grid-cols-2 gap-2 mb-4">
                 {(active.features || []).slice(0, 4).map((f) => (

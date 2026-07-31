@@ -19,21 +19,21 @@ const playfair = Playfair_Display({
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings().catch(() => null);
 
-  const title = settings?.defaultMetaTitle || "Calcutta Backpackers | Best Poshtel & Budget Hostel in Kolkata";
+  const title = settings?.defaultMetaTitle || "Calcutta Backpackers | Best Hostel in Kolkata (Poshtel-Style Dorms from ₹499)";
   const description = settings?.defaultMetaDescription ||
-    "Kolkata's top-rated poshtel — stylish dorms from ₹499/night, private rooms, free wifi, and WanderXP experiences (street food crawls, heritage walks, rooftop nights). Real value, zero pretension. Book direct on WhatsApp.";
+    "Kolkata's top-rated hostel for backpackers and solo travelers — a poshtel-style stay with stylish dorms from ₹499/night, private rooms, free wifi, and WanderXP experiences (street food crawls, heritage walks, rooftop nights). Real value, zero pretension. Book direct on WhatsApp.";
 
   return {
     metadataBase: new URL("https://www.calcuttabackpackers.com"),
     title,
     description,
     keywords: [
-      "poshtel kolkata",
       "hostel kolkata",
+      "best hostel kolkata",
       "budget hostel kolkata",
       "cheap hostel kolkata",
       "backpackers hostel kolkata",
-      "best hostel kolkata",
+      "poshtel kolkata",
       "hostel near sudder street",
       "hostel near park street",
       "dorms kolkata",
@@ -84,9 +84,9 @@ export default async function RootLayout({
 
   const structuredData: any = {
     "@context": "https://schema.org",
-    "@type": "LodgingBusiness",
+    "@type": "Hostel",
     "name": "Calcutta Backpackers",
-    "description": "A value-for-money poshtel in Kolkata offering dorms, private rooms, and curated WanderXP local experiences for backpackers and solo travelers.",
+    "description": "A budget-friendly hostel in Kolkata offering a poshtel-style stay - AC dorms, private rooms, and curated WanderXP local experiences for backpackers and solo travelers.",
     "url": "https://www.calcuttabackpackers.com",
     "image": "https://www.calcuttabackpackers.com/images/Community.webp",
     "priceRange": settings?.priceRangeLow && settings?.priceRangeHigh

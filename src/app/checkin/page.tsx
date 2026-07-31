@@ -6,7 +6,7 @@ import CheckinForm from "./CheckinForm";
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("Check-in").catch(() => null);
   return {
-    title: seo?.metaTitle || "Web Check-in | Calcutta Backpackers Poshtel, Kolkata",
+    title: seo?.metaTitle || "Web Check-in | Calcutta Backpackers Hostel, Kolkata",
     description: seo?.metaDescription || "Skip the front-desk wait — complete your check-in online before you arrive at Calcutta Backpackers.",
   };
 }
