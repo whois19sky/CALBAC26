@@ -15,6 +15,7 @@ const categories = ["All", "Culinary", "Culture", "Community", "Adventure"];
 export default function WanderXPPage() {
   const [experiences, setExperiences] = useState<SanityExperience[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState("All");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -86,13 +87,41 @@ export default function WanderXPPage() {
       {/* Experiences Grid */}
       <section className="py-24 md:py-32 bg-waabi-bg min-h-[500px]">
         <div className="max-w-[1400px] mx-auto px-6 md:px-10">
+          {/* Category Filter */}
+          <div className="flex flex-wrap justify-center gap-2 mb-12 -mx-1 px-1 overflow-x-auto">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-colors whitespace-nowrap ${
+                  activeCategory === cat
+                    ? "bg-dark text-white"
+                    : "bg-white text-dark/60 hover:text-dark border border-dark/10"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
           {loading ? (
              <div className="flex justify-center items-center h-64">
                <div className="w-10 h-10 border-4 border-waabi-green border-t-dark rounded-full animate-spin"></div>
              </div>
-          ) : (
+          ) : (() => {
+            const filteredExperiences = experiences.filter(
+              (exp) => activeCategory === "All" || exp.category === activeCategory
+            );
+            if (filteredExperiences.length === 0) {
+              return (
+                <div className="text-center py-20 text-dark/50">
+                  No experiences in "{activeCategory}" yet — check back soon, or try another category.
+                </div>
+              );
+            }
+            return (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {experiences.map((exp, i) => (
+              {filteredExperiences.map((exp, i) => (
                 <motion.div
                   key={exp._id}
                   initial={{ opacity: 0, y: 30 }}
@@ -140,14 +169,9 @@ export default function WanderXPPage() {
                   </div>
                 </motion.div>
               ))}
-              
-              {experiences.length === 0 && (
-                <div className="col-span-full text-center py-12 text-dark/50 font-medium">
-                  No experiences available at the moment.
-                </div>
-              )}
             </div>
-          )}
+            );
+          })()}
         </div>
       </section>
 
