@@ -4,15 +4,15 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import type { Room } from "@/lib/types";
+import { getRooms, urlFor, hasValidImage } from "@/lib/sanity";
+import type { SanityRoom } from "@/lib/sanity/queries";
 import { ArrowRight, Check, CheckCircle2 } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import toast from "react-hot-toast";
+import RoomBrowser from "./RoomBrowser";
 
 const WHATSAPP_NUMBER = "919875432441";
 
@@ -21,7 +21,7 @@ export default function BookingPage() {
   const preselectedRoomId = searchParams.get("room");
   
   const [step, setStep] = useState(1);
-  const [rooms, setRooms] = useState<Room[]>([]);
+  const [rooms, setRooms] = useState<SanityRoom[]>([]);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
@@ -29,7 +29,7 @@ export default function BookingPage() {
   const [checkInDate, setCheckInDate] = useState("");
   const [checkOutDate, setCheckOutDate] = useState("");
   const [guestsCount, setGuestsCount] = useState(1);
-  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+  const [selectedRoom, setSelectedRoom] = useState<SanityRoom | null>(null);
   
   const [guestDetails, setGuestDetails] = useState({
     name: "",
@@ -40,50 +40,34 @@ export default function BookingPage() {
 
   const [bookingId, setBookingId] = useState("");
 
-  // A booking lead should never be blocked by a database hiccup — these are the
-  // fallback room types shown immediately. If Supabase is reachable, they get
-  // silently replaced with live data (accurate prices) a moment later.
-  const FALLBACK_ROOMS: Room[] = [
-    { id: "fallback-dorm", name: "The Social Dorms", slug: "social-dorms", tagline: "Best Value. Zero Cap.", description: "AC capsule-style dorm bunks with privacy curtains and personal lockers.", price_per_night: 499, capacity: 8, features: ["Air Conditioned", "Privacy Curtains", "Personal Lockers", "Free WiFi"], images: ["/images/Dorm1.webp"], is_active: true, sort_order: 1, created_at: "" },
-    { id: "fallback-private", name: "Private Ensuite", slug: "private-ensuite", tagline: "Privacy, Priced Fair.", description: "Your own room and bathroom, AC, king bed.", price_per_night: 1999, capacity: 2, features: ["En-suite Bathroom", "King Size Bed", "Air Conditioned", "Free WiFi"], images: ["/images/private room.webp"], is_active: true, sort_order: 2, created_at: "" },
-    { id: "fallback-bunk", name: "Bunk Beds", slug: "bunk-beds", tagline: "The Cheapest Good Night's Sleep in Kolkata.", description: "Simple, clean AC bunk beds in a shared space.", price_per_night: 399, capacity: 6, features: ["Air Conditioned", "Shared Bathroom", "Personal Lockers", "Free WiFi"], images: ["/images/Dorm1.webp"], is_active: true, sort_order: 3, created_at: "" },
-    { id: "fallback-apartment", name: "Deluxe Apartment", slug: "deluxe-apartment", tagline: "For Groups & Long Stays.", description: "Fully furnished apartment with a real kitchen and living room.", price_per_night: 3499, capacity: 4, features: ["Full Kitchen", "Living Room", "Air Conditioned", "Free WiFi"], images: ["/images/private1.webp"], is_active: true, sort_order: 4, created_at: "" },
+  // Minimal, generic emergency fallback - only used if Sanity itself is
+  // completely unreachable. Not meant to look like real branded room
+  // options, just enough to keep the booking form usable in a true outage.
+  const EMERGENCY_FALLBACK_ROOMS: SanityRoom[] = [
+    { _id: "fallback-room", name: "Room / Dorm Bed", slug: { current: "room" }, tagline: "Contact us for current options", description: "Our room list is temporarily unavailable - message us directly on WhatsApp and we'll confirm availability and pricing.", pricePerNight: 0, capacity: 1, features: [], images: [], isActive: true, sortOrder: 1 },
   ];
 
   useEffect(() => {
-    // Show fallback rooms immediately — the form is usable from the first render,
-    // with no loading state and no dependency on Supabase being reachable.
-    setRooms(FALLBACK_ROOMS);
-    setLoading(false);
-
     async function fetchRooms() {
       try {
-        const { data, error } = await supabase
-          .from('rooms')
-          .select('*')
-          .eq('is_active', true)
-          .order('sort_order', { ascending: true });
-
-        if (error) {
-          console.error("Live room fetch failed, keeping fallback list:", error);
-          return;
-        }
-
-        // Only replace the fallback list if we actually got real rooms back —
-        // an empty or failed fetch should never leave the guest with nothing to pick.
+        const data = await getRooms();
         if (data && data.length > 0) {
           setRooms(data);
           if (preselectedRoomId) {
-            const room = data.find(r => r.id === preselectedRoomId || r.slug === preselectedRoomId);
+            const room = data.find(r => r._id === preselectedRoomId || r.slug?.current === preselectedRoomId);
             if (room) setSelectedRoom(room);
           }
+        } else {
+          setRooms(EMERGENCY_FALLBACK_ROOMS);
         }
       } catch (err) {
-        console.error("Live room fetch threw, keeping fallback list:", err);
+        console.error("Failed to fetch rooms from Sanity, using emergency fallback:", err);
+        setRooms(EMERGENCY_FALLBACK_ROOMS);
       }
+      setLoading(false);
     }
     fetchRooms();
-  }, [preselectedRoomId, supabase]);
+  }, [preselectedRoomId]);
 
   // Set minimum date to today
   const today = new Date().toISOString().split('T')[0];
@@ -105,7 +89,7 @@ export default function BookingPage() {
     const start = new Date(checkInDate);
     const end = new Date(checkOutDate);
     const nights = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
-    return selectedRoom.price_per_night * nights * (selectedRoom.capacity > 1 && !selectedRoom.name.includes("Private") ? guestsCount : 1);
+    return selectedRoom.pricePerNight * nights * (selectedRoom.capacity > 1 && !selectedRoom.name.includes("Private") ? guestsCount : 1);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -179,7 +163,7 @@ export default function BookingPage() {
 
   return (
     <>
-      <Navbar />
+      
       
       <main className="pt-32 pb-24 md:pt-40 md:pb-32 bg-waabi-bg min-h-screen">
         <div className="max-w-[800px] mx-auto px-6">
@@ -256,7 +240,7 @@ export default function BookingPage() {
                   <h2 className="text-2xl font-serif text-dark">Select a Room</h2>
                   <button onClick={() => setStep(1)} className="text-sm font-medium text-dark/50 hover:text-dark">Edit Dates</button>
                 </div>
-                
+
                 {loading ? (
                   <div className="flex justify-center py-10"><div className="w-8 h-8 border-4 border-waabi-green border-t-waabi-green-dark rounded-full animate-spin"></div></div>
                 ) : rooms.length === 0 ? (
@@ -265,36 +249,16 @@ export default function BookingPage() {
                     <p>Message us on WhatsApp and we'll sort you out directly.</p>
                   </div>
                 ) : (
-                  <div className="space-y-4 mb-8 max-h-[50vh] overflow-y-auto pr-2">
-                    {rooms.map(room => (
-                      <div 
-                        key={room.id}
-                        onClick={() => setSelectedRoom(room)}
-                        className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
-                          selectedRoom?.id === room.id 
-                            ? 'border-waabi-green-dark bg-waabi-green/10' 
-                            : 'border-dark/10 hover:border-waabi-green-dark/50 hover:bg-waabi-bg'
-                        }`}
-                      >
-                        <div className="flex justify-between items-start gap-4">
-                          <div>
-                            <h3 className="font-serif text-lg text-dark font-medium">{room.name}</h3>
-                            <p className="text-sm text-dark/60 mt-1 line-clamp-1">{room.tagline}</p>
-                            <p className="text-xs font-bold text-dark/40 uppercase mt-2 tracking-wider">Capacity: {room.capacity}</p>
-                          </div>
-                          <div className="text-right">
-                            <span className="font-serif text-xl text-dark font-bold">₹{room.price_per_night}</span>
-                            <span className="text-xs text-dark/50 block">/night</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <RoomBrowser
+                    rooms={rooms}
+                    selectedRoom={selectedRoom}
+                    onSelectRoom={(room) => setSelectedRoom(room)}
+                  />
                 )}
 
-                <div className="flex gap-4">
+                <div className="flex gap-4 mt-8">
                   <button onClick={() => setStep(1)} className="btn-outline w-1/3 text-center justify-center">Back</button>
-                  <button onClick={handleNextStep} className="btn-primary w-2/3 shadow-lg justify-center text-center">Continue to Details</button>
+                  <button onClick={handleNextStep} disabled={!selectedRoom} className="btn-primary w-2/3 shadow-lg justify-center text-center disabled:opacity-40 disabled:cursor-not-allowed">Continue to Details</button>
                 </div>
               </motion.div>
             )}
@@ -395,7 +359,7 @@ export default function BookingPage() {
         </div>
       </main>
       
-      <Footer />
+      
     </>
   );
 }

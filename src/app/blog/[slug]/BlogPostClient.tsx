@@ -7,8 +7,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Calendar, User, Tag } from "lucide-react";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import { getBlogPostBySlug, urlFor } from "@/lib/sanity";
 import type { SanityBlogPost } from "@/lib/sanity/queries";
 import { format } from "date-fns";
@@ -90,7 +88,7 @@ export default function BlogPostClient() {
 
   return (
     <>
-      <Navbar />
+      
       
       <article className="pt-32 pb-24 md:pt-40 md:pb-32 bg-white min-h-screen">
         <div className="max-w-[800px] mx-auto px-6 md:px-10">
@@ -156,7 +154,7 @@ export default function BlogPostClient() {
         </div>
       </article>
 
-      <Footer />
+      
     </>
   );
 }

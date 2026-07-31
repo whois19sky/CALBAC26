@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import { createClient } from "@/lib/supabase/client";
 import { uploadFileToStorage } from "@/lib/supabase/client";
 import { CheckCircle2 } from "lucide-react";
@@ -130,7 +128,7 @@ export default function CheckinPage() {
 
   return (
     <>
-      <Navbar />
+      
       
       <main className="pt-32 pb-24 md:pt-40 md:pb-32 bg-waabi-bg min-h-screen">
         <div className="max-w-[700px] mx-auto px-6">
@@ -323,7 +321,7 @@ export default function CheckinPage() {
         </div>
       </main>
       
-      <Footer />
+      
     </>
   );
 }

@@ -23,7 +23,7 @@ export default function Footer() {
         <div className="flex flex-col gap-6 md:w-1/3">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center p-1 overflow-hidden shadow-sm border border-dark/5 flex-shrink-0">
-              <Image src={logoSrc} alt="CB Logo" width={56} height={56} className="object-contain" />
+              <Image key={logoSrc} src={logoSrc} alt="CB Logo" width={56} height={56} className="object-contain animate-[fadeIn_0.4s_ease-out]" />
             </div>
             <div>
               <h3 className="text-dark font-serif text-2xl">Calcutta Backpackers</h3>

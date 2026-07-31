@@ -5,8 +5,6 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check, Star, Users, Award, Wifi, Wind, Lock, Tv, UtensilsCrossed, WashingMachine } from "lucide-react";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import { getRooms, urlFor } from "@/lib/sanity";
 import type { SanityRoom } from "@/lib/sanity/queries";
 
@@ -39,7 +37,7 @@ export default function TheNestPage() {
 
   return (
     <>
-      <Navbar />
+      
       
       {/* Hero */}
       <section className="relative h-[70vh] min-h-[500px] bg-dark overflow-hidden">
@@ -266,7 +264,7 @@ export default function TheNestPage() {
         </div>
       </section>
 
-      <Footer />
+      
     </>
   );
 }

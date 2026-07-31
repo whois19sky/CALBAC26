@@ -4,8 +4,6 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, MessageCircle } from "lucide-react";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 
 const socialPosts = [
   { image: "/images/Community.webp", caption: "Community vibes at its best" },
@@ -19,7 +17,7 @@ const socialPosts = [
 export default function TheSocialPage() {
   return (
     <>
-      <Navbar />
+      
       
       {/* Hero */}
       <section className="relative h-[60vh] min-h-[450px] overflow-hidden bg-dark">
@@ -137,7 +135,7 @@ export default function TheSocialPage() {
         </div>
       </section>
 
-      <Footer />
+      
     </>
   );
 }

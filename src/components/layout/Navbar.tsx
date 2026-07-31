@@ -68,11 +68,12 @@ export default function Navbar() {
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-white">
               <Image
+                key={logoSrc}
                 src={logoSrc}
                 alt="Calcutta Backpackers"
                 fill
                 sizes="48px"
-                className="object-contain p-1"
+                className="object-contain p-1 animate-[fadeIn_0.4s_ease-out]"
                 priority
               />
             </div>

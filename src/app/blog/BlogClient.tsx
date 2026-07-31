@@ -5,8 +5,6 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Calendar, User } from "lucide-react";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import { getBlogPosts, urlFor } from "@/lib/sanity";
 import type { SanityBlogPost } from "@/lib/sanity/queries";
 import { format } from "date-fns";
@@ -30,7 +28,7 @@ export default function BlogClient() {
 
   return (
     <>
-      <Navbar />
+      
       
       {/* Hero */}
       <section className="pt-32 pb-16 md:pt-40 md:pb-24 bg-waabi-bg relative overflow-hidden">
@@ -122,7 +120,7 @@ export default function BlogClient() {
         </div>
       </section>
 
-      <Footer />
+      
     </>
   );
 }

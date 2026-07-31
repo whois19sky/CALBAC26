@@ -4,8 +4,6 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Clock, MapPin, Compass } from "lucide-react";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import { getExperiences, urlFor } from "@/lib/sanity";
 import { useEffect, useState } from "react";
 import type { SanityExperience } from "@/lib/sanity/queries";
@@ -32,7 +30,7 @@ export default function WanderXPPage() {
   }, []);
   return (
     <>
-      <Navbar />
+      
       
       {/* Hero */}
       <section className="relative h-[70vh] min-h-[500px] overflow-hidden" style={{ background: '#12314F' }}>
@@ -199,7 +197,7 @@ export default function WanderXPPage() {
         </div>
       </section>
 
-      <Footer />
+      
     </>
   );
 }

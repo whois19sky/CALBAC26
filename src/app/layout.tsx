@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import Analytics from "@/components/Analytics";
+import SiteChrome from "@/components/layout/SiteChrome";
 import { getSiteSettings } from "@/lib/sanity";
 
 const inter = Inter({
@@ -148,7 +149,9 @@ export default async function RootLayout({
             },
           }} 
         />
-        <main className="flex-grow">{children}</main>
+        <SiteChrome>
+          <main className="flex-grow">{children}</main>
+        </SiteChrome>
         <Analytics />
       </body>
     </html>
