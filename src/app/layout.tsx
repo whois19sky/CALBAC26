@@ -4,7 +4,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import Analytics from "@/components/Analytics";
 import SiteChrome from "@/components/layout/SiteChrome";
-import { getSiteSettings } from "@/lib/sanity";
+import { getSiteSettings, getTestimonials } from "@/lib/sanity";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -81,6 +81,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const settings = await getSiteSettings().catch(() => null);
+  const testimonials = await getTestimonials().catch(() => []);
 
   const structuredData: any = {
     "@context": "https://schema.org",
@@ -108,6 +109,20 @@ export default async function RootLayout({
       : ["Free WiFi", "Air Conditioning", "Lockers", "Guided Local Experiences"]
     ).map((name) => ({ "@type": "LocationFeatureSpecification", name, value: true })),
   };
+
+  // Only add AggregateRating if there's real testimonial data to compute it
+  // from - fabricating a rating/review count would violate Google's
+  // structured data guidelines and could get the whole site penalized.
+  if (testimonials.length > 0) {
+    const avgRating = testimonials.reduce((sum, t) => sum + (t.rating || 0), 0) / testimonials.length;
+    structuredData.aggregateRating = {
+      "@type": "AggregateRating",
+      "ratingValue": avgRating.toFixed(1),
+      "reviewCount": testimonials.length,
+      "bestRating": "5",
+      "worstRating": "1",
+    };
+  }
 
   // Only add geo/neighborhood fields if actually set in Sanity - fabricating
   // coordinates would be worse than omitting them.
