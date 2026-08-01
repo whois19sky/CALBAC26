@@ -31,6 +31,7 @@ export async function mirrorFileToDrive(fileUrl: string, fileName: string): Prom
       body: Readable.from(buffer),
     },
     fields: "id, webViewLink",
+    supportsAllDrives: true, // Required for uploads into a Shared Drive folder
   });
 
   const fileId = created.data.id;
@@ -43,6 +44,7 @@ export async function mirrorFileToDrive(fileUrl: string, fileName: string): Prom
   await drive.permissions.create({
     fileId,
     requestBody: { role: "reader", type: "anyone" },
+    supportsAllDrives: true,
   });
 
   return created.data.webViewLink || `https://drive.google.com/file/d/${fileId}/view`;
