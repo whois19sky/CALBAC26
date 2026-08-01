@@ -33,7 +33,17 @@ export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
+  // Default to TRUE (mobile-safe) rather than false. Defaulting to "desktop"
+  // meant every page load briefly assumed desktop before this corrected itself
+  // a moment later - long enough for the browser to start downloading the
+  // heavy desktop video on an actual phone before the correction happened.
+  // Worst case with this default: a desktop user briefly sees the light
+  // treatment before the video swaps in - trivial, compared to the mobile
+  // risk this eliminates.
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window !== "undefined") return window.innerWidth < 768;
+    return true;
+  });
   const { settings } = useSiteSettings();
   const videoUrl = settings?.heroVideoUrl || FALLBACK_VIDEO_URL;
   const mobileVideoUrl = settings?.heroVideoMobile?.asset?.url || "";
