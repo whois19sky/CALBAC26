@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { appendCheckinRow } from "@/lib/googleSheets";
-import { mirrorFileToDrive } from "@/lib/googleDrive";
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,23 +12,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    let id_image_drive_url: string | undefined;
-
-    if (body.id_image_url) {
-      try {
-        const safeName = body.full_name.replace(/[^a-zA-Z0-9]+/g, "_");
-        const ext = body.id_image_url.split(".").pop()?.split("?")[0] || "jpg";
-        id_image_drive_url = await mirrorFileToDrive(
-          body.id_image_url,
-          `${safeName}_${body.id_type}_${Date.now()}.${ext}`
-        );
-      } catch (driveErr) {
-        // Don't fail the whole check-in sync just because the Drive mirror failed —
-        // the row still gets logged to Sheets with the original Supabase URL noted.
-        console.error("Google Drive mirror failed:", driveErr);
-      }
-    }
-
+    // ID photos are stored in Supabase Storage only - the Google Drive mirror
+    // was retired due to Google service account storage restrictions that
+    // require a paid Shared Drive setup. body.id_image_url (the Supabase link)
+    // is passed straight through to the Sheet instead.
     await appendCheckinRow({
       full_name: body.full_name,
       address: body.address,
@@ -44,7 +30,7 @@ export async function POST(request: NextRequest) {
       going_to: body.going_to,
     });
 
-    return NextResponse.json({ ok: true, id_image_drive_url });
+    return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("Google Sheets check-in sync failed:", err);
     return NextResponse.json(

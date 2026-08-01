@@ -21,6 +21,7 @@ export default function CheckinPage() {
     id_type: "Passport",
     id_number: "",
     id_image_url: "",
+    id_image_back_url: "",
     emergency_contact: "",
     special_requests: "",
     address: "",
@@ -29,16 +30,16 @@ export default function CheckinPage() {
     going_to: ""
   });
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, side: "front" | "back") => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const toastId = toast.loading("Uploading image...");
+    const toastId = toast.loading(`Uploading ${side} of ID...`);
     const url = await uploadFileToStorage(file, 'uploads');
     
     if (url) {
-      setFormData({ ...formData, id_image_url: url });
-      toast.success("Image uploaded successfully!", { id: toastId });
+      setFormData(prev => ({ ...prev, [side === "front" ? "id_image_url" : "id_image_back_url"]: url }));
+      toast.success(`${side === "front" ? "Front" : "Back"} uploaded successfully!`, { id: toastId });
     } else {
       toast.error("Failed to upload image. Did you create the 'uploads' bucket?", { id: toastId });
     }
@@ -78,6 +79,7 @@ export default function CheckinPage() {
         id_type: formData.id_type,
         id_number: formData.id_number,
         id_image_base64: formData.id_image_url, // Storing URL in the text column
+        id_image_back: formData.id_image_back_url,
         emergency_contact: formData.emergency_contact,
         special_requests: formData.special_requests,
         address: formData.address,
@@ -281,16 +283,28 @@ export default function CheckinPage() {
                       placeholder="Next destination after us"
                     />
                   </div>
-                  <div className="md:col-span-2">
-                    <label className={labelClass}>Upload Verified ID Photo *</label>
+                  <div>
+                    <label className={labelClass}>Upload ID Photo — Front *</label>
                     <input 
                       required type="file"
                       accept="image/*"
-                      onChange={handleImageUpload}
+                      onChange={(e) => handleImageUpload(e, "front")}
                       className="w-full bg-waabi-bg border border-dark/10 rounded-xl px-4 py-2.5 text-dark focus:outline-none focus:border-waabi-green-dark transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-waabi-green/20 file:text-waabi-green-dark hover:file:bg-waabi-green/30"
                     />
-                    {formData.id_image_url && <p className="text-xs text-green-600 mt-2 font-bold">✓ Image uploaded successfully</p>}
-                    <p className="text-xs text-dark/40 mt-2">Please upload a clear photo of your selected ID document.</p>
+                    {formData.id_image_url && <p className="text-xs text-green-600 mt-2 font-bold">✓ Front uploaded</p>}
+                  </div>
+                  <div>
+                    <label className={labelClass}>Upload ID Photo — Back</label>
+                    <input 
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(e, "back")}
+                      className="w-full bg-waabi-bg border border-dark/10 rounded-xl px-4 py-2.5 text-dark focus:outline-none focus:border-waabi-green-dark transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-waabi-green/20 file:text-waabi-green-dark hover:file:bg-waabi-green/30"
+                    />
+                    {formData.id_image_back_url && <p className="text-xs text-green-600 mt-2 font-bold">✓ Back uploaded</p>}
+                  </div>
+                  <div className="md:col-span-2">
+                    <p className="text-xs text-dark/40 -mt-2">Please upload clear photos of your selected ID document. Back is optional but recommended for full verification.</p>
                   </div>
                   <div className="md:col-span-2">
                     <label className={labelClass}>Special Requests</label>
