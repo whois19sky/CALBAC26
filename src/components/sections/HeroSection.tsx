@@ -69,6 +69,7 @@ export default function HeroSection() {
               loop
               playsInline
               preload="metadata"
+              poster={mobileImageSrc}
               onLoadedData={() => setVideoLoaded(true)}
               className={`w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
             >
@@ -91,6 +92,7 @@ export default function HeroSection() {
             loop
             playsInline
             preload="metadata"
+            poster={mobileImageSrc}
             onLoadedData={() => setVideoLoaded(true)}
             className={`w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
           >
