@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
+import { getTestimonials } from "@/lib/sanity";
 
-const stats = [
+const fallbackStats = [
   { value: 15000, suffix: "+", label: "Happy Guests" },
   { value: 4.9, suffix: "/5", label: "Google Rating", decimals: 1 },
   { value: 50, suffix: "+", label: "Countries Represented" },
@@ -35,6 +36,29 @@ function useCountUp(target: number, decimals = 0, duration = 2000) {
 }
 
 export default function StatsCounter() {
+  const [stats, setStats] = useState(fallbackStats);
+
+  useEffect(() => {
+    const fetchReviewStats = async () => {
+      try {
+        const testimonials = await getTestimonials();
+        if (testimonials.length > 0) {
+          const avgRating = testimonials.reduce((sum, testimonial) => sum + (testimonial.rating || 0), 0) / testimonials.length;
+          setStats([
+            { value: testimonials.length, suffix: "+", label: "Happy Guests" },
+            { value: Number(avgRating.toFixed(1)), suffix: "/5", label: "Google Rating", decimals: 1 },
+            { value: 50, suffix: "+", label: "Countries Represented" },
+            { value: 6, suffix: "", label: "Years of Hospitality" },
+          ]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch testimonial review stats:", err);
+      }
+    };
+
+    fetchReviewStats();
+  }, []);
+
   return (
     <section className="py-24 md:py-32 bg-waabi-bg">
       <div className="max-w-[1400px] mx-auto px-6 md:px-10">
