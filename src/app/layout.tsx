@@ -22,9 +22,9 @@ export async function generateMetadata(): Promise<Metadata> {
     ? urlFor(settings!.logo).width(256).url()
     : "/images/CB Logo new.png";
 
-  const title = settings?.defaultMetaTitle || "Calcutta Backpackers | Best Hostel in Kolkata (Poshtel-Style Dorms from ₹499)";
+  const title = settings?.defaultMetaTitle || "Calcutta Backpackers Hostel, Kolkata | Budget Hostel in Kolkata";
   const description = settings?.defaultMetaDescription ||
-    "Kolkata's top-rated hostel for backpackers and solo travelers — a poshtel-style stay with stylish dorms from ₹499/night, private rooms, free wifi, and WanderXP experiences (street food crawls, heritage walks, rooftop nights). Real value, zero pretension. Book direct on WhatsApp.";
+    "Calcutta Backpackers Hostel is a budget-friendly, poshtel-style stay in Kolkata for backpackers and solo travelers — AC dorms, private rooms, free wifi, and curated WanderXP experiences. Book direct on WhatsApp.";
 
   return {
     metadataBase: new URL("https://www.calcuttabackpackers.com"),
@@ -59,7 +59,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       url: "https://www.calcuttabackpackers.com",
-      siteName: "Calcutta Backpackers",
+      siteName: "Calcutta Backpackers Hostel, Kolkata",
       images: [
         {
           url: "/images/Community.webp",
@@ -89,7 +89,7 @@ export default async function RootLayout({
   const structuredData: any = {
     "@context": "https://schema.org",
     "@type": "Hostel",
-    "name": "Calcutta Backpackers",
+    "name": "Calcutta Backpackers Hostel, Kolkata",
     "description": "A budget-friendly hostel in Kolkata offering a poshtel-style stay - AC dorms, private rooms, and curated WanderXP local experiences for backpackers and solo travelers.",
     "url": "https://www.calcuttabackpackers.com",
     "image": "https://www.calcuttabackpackers.com/images/Community.webp",

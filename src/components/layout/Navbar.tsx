@@ -79,10 +79,10 @@ export default function Navbar() {
             </div>
             <div className="flex flex-col">
               <span className={`font-serif text-base font-bold leading-tight tracking-tight transition-colors ${hasBackground ? 'text-dark' : 'text-white'}`}>
-                Calcutta
+                Calcutta Backpackers
               </span>
               <span className={`text-[10px] uppercase tracking-[0.2em] font-bold transition-colors ${hasBackground ? 'text-waabi-green-dark' : 'text-waabi-green'}`}>
-                Backpackers
+                Hostel • Kolkata
               </span>
             </div>
           </Link>

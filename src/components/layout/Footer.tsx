@@ -26,8 +26,8 @@ export default function Footer() {
               <Image key={logoSrc} src={logoSrc} alt="CB Logo" width={56} height={56} className="object-contain animate-[fadeIn_0.4s_ease-out]" />
             </div>
             <div>
-              <h3 className="text-dark font-serif text-2xl">Calcutta Backpackers</h3>
-              <p className="text-dark/90 text-sm mt-1">Kolkata's Best Value Stay</p>
+              <h3 className="text-dark font-serif text-2xl">Calcutta Backpackers Hostel</h3>
+              <p className="text-dark/90 text-sm mt-1">Kolkata’s Best Value Stay</p>
             </div>
           </div>
           
