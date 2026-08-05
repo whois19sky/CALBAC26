@@ -4,7 +4,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import Analytics from "@/components/Analytics";
 import SiteChrome from "@/components/layout/SiteChrome";
-import { getSiteSettings, getTestimonials, urlFor, hasValidImage } from "@/lib/sanity";
+import { getSiteSettings, getTestimonials, hasValidImage, urlFor } from "@/lib/sanity";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -113,9 +113,7 @@ export default async function RootLayout({
     ).map((name) => ({ "@type": "LocationFeatureSpecification", name, value: true })),
   };
 
-  // Only add AggregateRating if there's real testimonial data to compute it
-  // from - fabricating a rating/review count would violate Google's
-  // structured data guidelines and could get the whole site penalized.
+  // Publish review markup only when there is real testimonial content.
   if (testimonials.length > 0) {
     const avgRating = testimonials.reduce((sum, t) => sum + (t.rating || 0), 0) / testimonials.length;
     structuredData.aggregateRating = {
@@ -125,6 +123,22 @@ export default async function RootLayout({
       "bestRating": "5",
       "worstRating": "1",
     };
+
+    structuredData.review = testimonials.slice(0, 10).map((testimonial) => ({
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": testimonial.guestName,
+      },
+      "datePublished": testimonial.reviewDate || undefined,
+      "reviewBody": testimonial.quote,
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": testimonial.rating,
+        "bestRating": "5",
+        "worstRating": "1",
+      },
+    }));
   }
 
   // Only add geo/neighborhood fields if actually set in Sanity - fabricating

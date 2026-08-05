@@ -34,6 +34,7 @@ export type SanityTestimonial = {
   origin: string;
   quote: string;
   rating: number;
+  reviewDate?: string;
   isActive: boolean;
   sortOrder: number;
 };
