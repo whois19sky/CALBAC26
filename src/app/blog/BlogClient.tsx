@@ -90,6 +90,11 @@ export default function BlogClient() {
                     <div className="absolute top-4 left-4 px-3 py-1 bg-white/90 backdrop-blur-md text-dark text-xs font-bold uppercase tracking-wider rounded-full">
                       {post.category}
                     </div>
+                    {post.isPinned && (
+                      <div className="absolute top-4 right-4 px-3 py-1 bg-waabi-green-dark text-white text-xs font-bold uppercase tracking-wider rounded-full flex items-center gap-1">
+                        ⭐ Popular
+                      </div>
+                    )}
                   </Link>
 
                   <div className="flex flex-col flex-grow">

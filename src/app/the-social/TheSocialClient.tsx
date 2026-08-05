@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, MessageCircle } from "lucide-react";
+import { useSiteSettings } from "@/lib/sanity";
+import InstagramEmbed from "@/components/InstagramEmbed";
 
 const socialPosts = [
   { image: "/images/Community.webp", caption: "Community vibes at its best" },
@@ -15,6 +17,9 @@ const socialPosts = [
 ];
 
 export default function TheSocialPage() {
+  const { settings } = useSiteSettings();
+  const instagramPosts = settings?.instagramPosts || [];
+
   return (
     <>
       
@@ -94,6 +99,15 @@ export default function TheSocialPage() {
               </motion.div>
             ))}
           </div>
+
+          {instagramPosts.length > 0 && (
+            <div className="mt-20">
+              <p className="text-center text-sm font-bold text-dark/40 uppercase tracking-widest mb-8">
+                Straight From Our Instagram
+              </p>
+              <InstagramEmbed postUrls={instagramPosts} />
+            </div>
+          )}
         </div>
       </section>
 

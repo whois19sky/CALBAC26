@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getBlogPosts } from "@/lib/sanity";
 
 const BASE_URL = "https://www.calcuttabackpackers.com";
 
@@ -16,23 +16,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   let blogRoutes: MetadataRoute.Sitemap = [];
   try {
-    const supabase = await createServerSupabaseClient();
-    const { data: posts } = await supabase
-      .from("blog_posts")
-      .select("slug, published_at, created_at")
-      .eq("is_published", true);
-
-    if (posts) {
-      blogRoutes = posts.map((post) => ({
-        url: `${BASE_URL}/blog/${post.slug}`,
-        lastModified: post.published_at || post.created_at,
-        changeFrequency: "monthly",
-        priority: 0.6,
-      }));
-    }
+    const posts = await getBlogPosts();
+    blogRoutes = posts.map((post) => ({
+      url: `${BASE_URL}/blog/${post.slug.current}`,
+      lastModified: post.publishedAt,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    }));
   } catch {
-    // If the DB call fails at build time, we still return the static routes below
-    // rather than failing the whole sitemap.
+    // If the CMS call fails at build time, we still return the static routes
+    // below rather than failing the whole sitemap.
   }
 
   return [...staticRoutes, ...blogRoutes];

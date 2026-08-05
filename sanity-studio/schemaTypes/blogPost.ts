@@ -33,6 +33,7 @@ export default {
       ],
     },
     { name: 'isPublished', title: 'Published', type: 'boolean', initialValue: false },
+    { name: 'isPinned', title: 'Pin to Top (shows before newer posts, in a "Popular" section)', type: 'boolean', initialValue: false },
     { name: 'publishedAt', title: 'Published At', type: 'datetime' },
   ],
   preview: {

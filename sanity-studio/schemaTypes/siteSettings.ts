@@ -5,8 +5,8 @@ export default {
   // Singleton pattern - there should only ever be one of these documents.
   fields: [
     { name: 'logo', title: 'Logo', type: 'image' },
-    { name: 'heroVideoUrl', title: 'Hero Video URL (Desktop)', type: 'url' },
-    { name: 'heroVideoMobile', title: 'Hero Video (Mobile - upload directly, keep under ~6MB)', type: 'file', options: { accept: 'video/mp4' } },
+    { name: 'heroVideoUrl', title: 'Hero Video URL (fallback - only used if no video is uploaded below)', type: 'url' },
+    { name: 'heroVideoMobile', title: 'Hero Video (used for ALL devices - upload directly, keep under ~6MB)', type: 'file', options: { accept: 'video/mp4' } },
     { name: 'heroImageMobile', title: 'Hero Image (Mobile fallback, used only if no mobile video is set)', type: 'image' },
 
     { name: 'homeHeroTitle1', title: 'Home: Hero Slide 1 Title', type: 'string' },
@@ -22,7 +22,13 @@ export default {
     { name: 'whatsappNumber', title: 'WhatsApp Number (for bookings)', type: 'string' },
     { name: 'contactEmail', title: 'Contact Email', type: 'string' },
     { name: 'contactAddress', title: 'Address', type: 'text', rows: 2 },
-    { name: 'instagramUrl', title: 'Instagram URL', type: 'url' },
+    { name: 'instagramUrl', title: 'Instagram Profile URL', type: 'url' },
+    {
+      name: 'instagramPosts',
+      title: 'Instagram Posts to Embed (paste public post URLs, e.g. instagram.com/p/XXXXX)',
+      type: 'array',
+      of: [{ type: 'url' }],
+    },
     { name: 'facebookUrl', title: 'Facebook URL', type: 'url' },
 
     // --- Default/Fallback SEO (used when a page has no custom SEO entry below) ---

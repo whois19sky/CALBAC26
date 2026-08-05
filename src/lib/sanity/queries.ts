@@ -24,6 +24,7 @@ export type SanityBlogPost = {
   category: string;
   content: any[];
   isPublished: boolean;
+  isPinned: boolean;
   publishedAt: string;
 };
 
@@ -66,6 +67,7 @@ export type SanitySiteSettings = {
   contactEmail: string;
   contactAddress: string;
   instagramUrl: string;
+  instagramPosts: string[];
   facebookUrl: string;
   defaultMetaTitle: string;
   defaultMetaDescription: string;
@@ -89,7 +91,7 @@ export async function getRooms(): Promise<SanityRoom[]> {
 
 export async function getBlogPosts(): Promise<SanityBlogPost[]> {
   return sanityClient.fetch(
-    `*[_type == "blogPost" && isPublished == true] | order(publishedAt desc)`
+    `*[_type == "blogPost" && isPublished == true] | order(isPinned desc, publishedAt desc)`
   );
 }
 
