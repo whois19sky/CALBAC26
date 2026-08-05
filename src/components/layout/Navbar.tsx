@@ -42,7 +42,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const isHomePage = pathname === "/";
   const { settings } = useSiteSettings();
-  const logoSrc = hasValidImage(settings?.logo) ? urlFor(settings!.logo).width(96).url() : "/images/logo.png";
+  const logoSrc = hasValidImage(settings?.logo) ? urlFor(settings!.logo).width(96).url() : "/images/CB Logo new.png";
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 80);

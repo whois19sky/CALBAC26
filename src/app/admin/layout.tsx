@@ -18,6 +18,7 @@ import {
   Star
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useSiteSettings, urlFor, hasValidImage } from "@/lib/sanity";
 import toast from "react-hot-toast";
 
 const navItems = [
@@ -35,6 +36,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const { settings } = useSiteSettings();
+  const logoSrc = hasValidImage(settings?.logo) ? urlFor(settings!.logo).width(96).url() : "/images/CB Logo new.png";
   const supabase = createClient();
 
   const handleLogout = async () => {
@@ -53,7 +56,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="md:hidden bg-dark text-white p-4 flex items-center justify-between sticky top-0 z-50">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-white rounded-full p-0.5">
-              <Image src="/images/logo.png" alt="Logo" width={32} height={32} />
+              <Image src={logoSrc} alt="Logo" width={32} height={32} className="object-contain" />
             </div>
             <span className="font-serif font-medium">Extranet</span>
           </div>
@@ -71,7 +74,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       `}>
         <div className="p-6 hidden md:flex items-center gap-3 border-b border-white/10">
           <div className="w-10 h-10 bg-white rounded-full p-1 shrink-0">
-            <Image src="/images/logo.png" alt="Logo" width={40} height={40} />
+            <Image src={logoSrc} alt="Logo" width={40} height={40} className="object-contain" />
           </div>
           <div>
             <h2 className="font-serif font-medium leading-tight text-lg">Calcutta Backpackers</h2>

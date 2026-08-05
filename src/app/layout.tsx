@@ -4,7 +4,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import Analytics from "@/components/Analytics";
 import SiteChrome from "@/components/layout/SiteChrome";
-import { getSiteSettings, getTestimonials } from "@/lib/sanity";
+import { getSiteSettings, getTestimonials, urlFor, hasValidImage } from "@/lib/sanity";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -18,6 +18,9 @@ const playfair = Playfair_Display({
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings().catch(() => null);
+  const logoUrl = hasValidImage(settings?.logo)
+    ? urlFor(settings!.logo).width(256).url()
+    : "/images/CB Logo new.png";
 
   const title = settings?.defaultMetaTitle || "Calcutta Backpackers | Best Hostel in Kolkata (Poshtel-Style Dorms from ₹499)";
   const description = settings?.defaultMetaDescription ||
@@ -48,9 +51,9 @@ export async function generateMetadata(): Promise<Metadata> {
       "social hostel india",
     ],
     icons: {
-      icon: "/images/logo.png",
-      shortcut: "/images/logo.png",
-      apple: "/images/logo.png",
+      icon: logoUrl,
+      shortcut: logoUrl,
+      apple: logoUrl,
     },
     openGraph: {
       title,

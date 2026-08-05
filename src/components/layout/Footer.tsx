@@ -8,7 +8,7 @@ import { useSiteSettings, urlFor, hasValidImage } from "@/lib/sanity";
 
 export default function Footer() {
   const { settings } = useSiteSettings();
-  const logoSrc = hasValidImage(settings?.logo) ? urlFor(settings!.logo).width(112).url() : "/images/logo.png";
+  const logoSrc = hasValidImage(settings?.logo) ? urlFor(settings!.logo).width(112).url() : "/images/CB Logo new.png";
 
   return (
     <motion.footer 

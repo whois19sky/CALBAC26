@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
+import { useSiteSettings, urlFor, hasValidImage } from "@/lib/sanity";
 
 export default function AdminLogin() {
   const [loading, setLoading] = useState(false);
@@ -11,6 +12,8 @@ export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const { settings } = useSiteSettings();
+  const logoSrc = hasValidImage(settings?.logo) ? urlFor(settings!.logo).width(72).url() : "/images/CB Logo new.png";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +49,7 @@ export default function AdminLogin() {
         {/* Logo */}
         <div className="flex flex-col items-center mb-10">
           <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center p-1 overflow-hidden shadow-xl mb-4">
-            <Image src="/images/logo.png" alt="CB Logo" width={72} height={72} className="object-contain" priority />
+            <Image src={logoSrc} alt="CB Logo" width={72} height={72} className="object-contain" priority />
           </div>
           <h1 className="text-white font-serif text-3xl font-medium tracking-wide">Calcutta Backpackers</h1>
           <p className="text-waabi-green text-sm uppercase tracking-[0.2em] font-bold mt-2">Extranet Portal</p>
