@@ -22,8 +22,8 @@ export async function generateMetadata(): Promise<Metadata> {
     ? urlFor(settings!.logo).width(256).url()
     : "/images/CB Logo new.png";
 
-  const title = settings?.defaultMetaTitle || "Calcutta Backpackers Hostel, Kolkata | Budget Hostel in Kolkata";
-  const description = settings?.defaultMetaDescription ||
+  const title = "Calcutta Backpackers Hostel, Kolkata | Budget Hostel in Kolkata";
+  const description =
     "Calcutta Backpackers Hostel is a budget-friendly, poshtel-style stay in Kolkata for backpackers and solo travelers — AC dorms, private rooms, free wifi, and curated WanderXP experiences. Book direct on WhatsApp.";
 
   return {
