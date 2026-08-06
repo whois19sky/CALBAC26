@@ -2,6 +2,8 @@ import { Metadata } from "next";
 import { getPageSeo, getBlogPosts } from "@/lib/sanity";
 import BlogClient from "./BlogClient";
 
+export const revalidate = 60;
+
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("Blog").catch(() => null);
   return {

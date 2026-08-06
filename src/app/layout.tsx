@@ -7,6 +7,12 @@ import SiteChrome from "@/components/layout/SiteChrome";
 import { getSiteSettings, getTestimonials, hasValidImage, urlFor } from "@/lib/sanity";
 import { SiteSettingsProvider } from "@/lib/sanity/SiteSettingsContext";
 
+// Re-render (and re-fetch from Sanity) at most once every 60s, serving the
+// cached page to everyone else in between - without this, every single
+// visitor triggers a fresh live Sanity fetch on the server before anything
+// can be sent back, which is expensive under real traffic.
+export const revalidate = 60;
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],

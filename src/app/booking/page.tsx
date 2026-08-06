@@ -3,6 +3,8 @@ import { Metadata } from "next";
 import { getPageSeo, getRooms } from "@/lib/sanity";
 import BookingForm from "./BookingForm";
 
+export const revalidate = 60;
+
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("Booking").catch(() => null);
   return {
