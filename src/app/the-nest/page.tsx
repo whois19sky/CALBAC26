@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { getPageSeo, getRooms } from "@/lib/sanity";
 import TheNestClient from "./TheNestClient";
 
-export const revalidate = 60;
+export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("The Nest XP").catch(() => null);

@@ -36,7 +36,12 @@ export function urlFor(source: any) {
     return staticFallbackBuilder();
   }
   try {
-    return builder.image(source);
+    // .auto('format') lets Sanity's image CDN pick WebP/AVIF automatically
+    // based on the requesting browser's Accept header, instead of always
+    // serving whatever format the file was originally uploaded in (often a
+    // much larger JPEG/PNG). Every urlFor() caller benefits automatically -
+    // no per-call-site changes needed.
+    return builder.image(source).auto('format');
   } catch {
     return staticFallbackBuilder();
   }

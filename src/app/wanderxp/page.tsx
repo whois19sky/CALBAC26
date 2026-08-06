@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { getPageSeo, getExperiences } from "@/lib/sanity";
 import WanderXPClient from "./WanderXPClient";
 
-export const revalidate = 60;
+export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("WanderXP").catch(() => null);

@@ -116,7 +116,14 @@ export default function HeroSection() {
                 slide is actually showing, instead of a guessed min-height, so long
                 titles can never overflow into the section below. */}
             <div className="relative grid">
-              <AnimatePresence mode="wait">
+              {/* initial={false}: on first paint the headline renders directly at its
+                  final visible state instead of fading in from opacity:0 - the fade
+                  only plays on later slide changes. The headline is almost always the
+                  largest element on the page (LCP candidate); gating it behind a
+                  post-hydration animation delays LCP until React hydrates and the
+                  animation runs, which is exactly the kind of thing that looks fine
+                  on desktop but tanks the score under mobile's slower CPU/network. */}
+              <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={currentSlide}
                   initial={{ opacity: 0, y: 30 }}

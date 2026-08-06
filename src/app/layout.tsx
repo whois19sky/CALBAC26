@@ -7,11 +7,17 @@ import SiteChrome from "@/components/layout/SiteChrome";
 import { getSiteSettings, getTestimonials, hasValidImage, urlFor } from "@/lib/sanity";
 import { SiteSettingsProvider } from "@/lib/sanity/SiteSettingsContext";
 
-// Re-render (and re-fetch from Sanity) at most once every 60s, serving the
-// cached page to everyone else in between - without this, every single
+// Re-render (and re-fetch from Sanity) at most once every 5 minutes, serving
+// the cached page to everyone else in between - without this, every single
 // visitor triggers a fresh live Sanity fetch on the server before anything
-// can be sent back, which is expensive under real traffic.
-export const revalidate = 60;
+// can be sent back, which is expensive under real traffic. 5 minutes (rather
+// than something shorter) matters for a low-traffic site: a short window
+// mostly just means almost every real visit still lands during a "stale"
+// gap and pays the full live-render cost anyway. Content here (rooms,
+// pricing, testimonials) doesn't change minute-to-minute, so this is a safe
+// tradeoff - the admin panel's writes still go straight to Supabase/Sheets
+// regardless of this cache.
+export const revalidate = 300;
 
 const inter = Inter({
   variable: "--font-inter",

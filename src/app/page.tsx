@@ -11,7 +11,7 @@ import ContactSection from "@/components/sections/ContactSection";
 import { Metadata } from "next";
 import { getPageSeo, getRooms, getExperiences, getTestimonials } from "@/lib/sanity";
 
-export const revalidate = 60;
+export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("Homepage").catch(() => null);
