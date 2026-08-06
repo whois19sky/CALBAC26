@@ -1,30 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Calendar, User } from "lucide-react";
-import { getBlogPosts, urlFor } from "@/lib/sanity";
+import { urlFor } from "@/lib/sanity";
 import type { SanityBlogPost } from "@/lib/sanity/queries";
 import { format } from "date-fns";
 
-export default function BlogClient() {
-  const [posts, setPosts] = useState<SanityBlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchPosts() {
-      try {
-        const data = await getBlogPosts();
-        if (data) setPosts(data);
-      } catch (err) {
-        console.error("Failed to fetch blog posts from Sanity:", err);
-      }
-      setLoading(false);
-    }
-    fetchPosts();
-  }, []);
+export default function BlogClient({ initialPosts }: { initialPosts: SanityBlogPost[] }) {
+  const posts = initialPosts;
 
   return (
     <>
@@ -55,11 +40,7 @@ export default function BlogClient() {
       {/* Blog Grid */}
       <section className="py-16 md:py-24 bg-white min-h-[50vh]">
         <div className="max-w-[1400px] mx-auto px-6 md:px-10">
-          {loading ? (
-            <div className="flex justify-center items-center h-40">
-              <div className="w-8 h-8 border-4 border-waabi-green border-t-waabi-green-dark rounded-full animate-spin"></div>
-            </div>
-          ) : posts.length === 0 ? (
+          {posts.length === 0 ? (
             <div className="text-center py-20 text-dark/50">
               <p className="text-xl">No posts published yet.</p>
             </div>

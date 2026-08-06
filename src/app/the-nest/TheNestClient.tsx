@@ -1,29 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check, Star, Users, Award, Wifi, Wind, Lock, Tv, UtensilsCrossed, WashingMachine } from "lucide-react";
-import { getRooms, urlFor } from "@/lib/sanity";
+import { urlFor } from "@/lib/sanity";
 import type { SanityRoom } from "@/lib/sanity/queries";
 
-export default function TheNestPage() {
-  const [rooms, setRooms] = useState<SanityRoom[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        const data = await getRooms();
-        if (data) setRooms(data);
-      } catch (err) {
-        console.error("Failed to fetch rooms from Sanity:", err);
-      }
-      setLoading(false);
-    };
-    fetchRooms();
-  }, []);
+export default function TheNestPage({ initialRooms }: { initialRooms: SanityRoom[] }) {
+  const rooms = initialRooms;
 
   const lowestPrice = rooms.length > 0
     ? Math.min(...rooms.map((r) => r.pricePerNight))
@@ -158,11 +143,7 @@ export default function TheNestPage() {
           </motion.h2>
 
           <div className="space-y-12">
-            {loading ? (
-              <div className="flex justify-center py-20">
-                <div className="w-8 h-8 border-4 border-waabi-green border-t-waabi-green-dark rounded-full animate-spin" />
-              </div>
-            ) : rooms.length === 0 ? (
+            {rooms.length === 0 ? (
               <p className="text-center text-dark/50 py-20">Room information is being updated — check back shortly, or message us on WhatsApp.</p>
             ) : (
             rooms.map((room, i) => (
@@ -174,7 +155,7 @@ export default function TheNestPage() {
                 transition={{ duration: 0.8, delay: i * 0.1 }}
                 className="waabi-card bg-white p-4 md:p-6"
               >
-                <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 ${i % 2 === 1 ? 'md:direction-rtl' : ''}`}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className={`relative h-[300px] md:h-[450px] rounded-2xl overflow-hidden ${i % 2 === 1 ? 'md:order-2' : ''}`}>
                     <Image
                       src={room.images?.[0] ? urlFor(room.images[0]).width(900).url() : "/images/Community.webp"}

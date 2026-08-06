@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
-import { getPageSeo } from "@/lib/sanity";
+import { getPageSeo, getRooms } from "@/lib/sanity";
 import BookingForm from "./BookingForm";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -11,10 +11,11 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function BookingPage() {
+export default async function BookingPage() {
+  const rooms = await getRooms().catch(() => []);
   return (
     <Suspense fallback={<div className="h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-waabi-green border-t-dark rounded-full animate-spin"></div></div>}>
-      <BookingForm />
+      <BookingForm initialRooms={rooms} />
     </Suspense>
   );
 }

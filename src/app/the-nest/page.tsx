@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getPageSeo } from "@/lib/sanity";
+import { getPageSeo, getRooms } from "@/lib/sanity";
 import TheNestClient from "./TheNestClient";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -10,6 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function TheNestPage() {
-  return <TheNestClient />;
+export default async function TheNestPage() {
+  const rooms = await getRooms().catch(() => []);
+  return <TheNestClient initialRooms={rooms} />;
 }

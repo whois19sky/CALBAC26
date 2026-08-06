@@ -47,7 +47,7 @@ export default async function WanderXPPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(trip) }}
         />
       ))}
-      <WanderXPClient />
+      <WanderXPClient initialExperiences={experiences} />
     </>
   );
 }

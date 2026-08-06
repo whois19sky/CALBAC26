@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { getTestimonials } from "@/lib/sanity";
+import type { SanityTestimonial } from "@/lib/sanity/queries";
 
 const fallbackStats = [
   { value: 15000, suffix: "+", label: "Happy Guests" },
@@ -35,29 +35,49 @@ function useCountUp(target: number, decimals = 0, duration = 2000) {
   return { count, ref };
 }
 
-export default function StatsCounter() {
-  const [stats, setStats] = useState(fallbackStats);
+type Stat = { value: number; suffix: string; label: string; decimals?: number };
 
-  useEffect(() => {
-    const fetchReviewStats = async () => {
-      try {
-        const testimonials = await getTestimonials();
-        if (testimonials.length > 0) {
-          const avgRating = testimonials.reduce((sum, testimonial) => sum + (testimonial.rating || 0), 0) / testimonials.length;
-          setStats([
-            { value: testimonials.length, suffix: "+", label: "Happy Guests" },
-            { value: Number(avgRating.toFixed(1)), suffix: "/5", label: "Google Rating", decimals: 1 },
-            { value: 50, suffix: "+", label: "Countries Represented" },
-            { value: 6, suffix: "", label: "Years of Hospitality" },
-          ]);
-        }
-      } catch (err) {
-        console.error("Failed to fetch testimonial review stats:", err);
-      }
-    };
+// Pulled out into its own component (instead of calling useCountUp() inside
+// the .map() below) so each stat's hook is tied to a stable component
+// instance rather than a loop iteration - the previously-used
+// eslint-disable-next-line for react-hooks/rules-of-hooks is no longer
+// needed, and this can't ever break if the number of stats changes.
+function StatItem({ stat, index }: { stat: Stat; index: number }) {
+  const { count, ref } = useCountUp(stat.value, stat.decimals || 0);
 
-    fetchReviewStats();
-  }, []);
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{
+        duration: 0.8,
+        delay: index * 0.1,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+      className="text-center"
+    >
+      <div className="font-serif text-5xl md:text-7xl font-medium text-dark mb-4">
+        {stat.decimals ? count.toFixed(stat.decimals) : Math.floor(count)}
+        <span className="text-waabi-green-dark">{stat.suffix}</span>
+      </div>
+      <p className="label-upper text-dark/50">{stat.label}</p>
+    </motion.div>
+  );
+}
+
+export default function StatsCounter({ initialTestimonials }: { initialTestimonials: SanityTestimonial[] }) {
+  const stats: Stat[] = (() => {
+    if (initialTestimonials.length === 0) return fallbackStats;
+    const avgRating = initialTestimonials.reduce((sum, t) => sum + (t.rating || 0), 0) / initialTestimonials.length;
+    return [
+      { value: initialTestimonials.length, suffix: "+", label: "Happy Guests" },
+      { value: Number(avgRating.toFixed(1)), suffix: "/5", label: "Google Rating", decimals: 1 },
+      { value: 50, suffix: "+", label: "Countries Represented" },
+      { value: 6, suffix: "", label: "Years of Hospitality" },
+    ];
+  })();
 
   return (
     <section className="py-24 md:py-32 bg-waabi-bg">
@@ -65,32 +85,9 @@ export default function StatsCounter() {
         <div className="w-full h-px bg-dark/10 mb-16 md:mb-24" />
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-          {stats.map((stat, i) => {
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            const { count, ref } = useCountUp(stat.value, stat.decimals || 0);
-
-            return (
-              <motion.div
-                key={stat.label}
-                ref={ref}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{
-                  duration: 0.8,
-                  delay: i * 0.1,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className="text-center"
-              >
-                <div className="font-serif text-5xl md:text-7xl font-medium text-dark mb-4">
-                  {stat.decimals ? count.toFixed(stat.decimals) : Math.floor(count)}
-                  <span className="text-waabi-green-dark">{stat.suffix}</span>
-                </div>
-                <p className="label-upper text-dark/50">{stat.label}</p>
-              </motion.div>
-            );
-          })}
+          {stats.map((stat, i) => (
+            <StatItem key={stat.label} stat={stat} index={i} />
+          ))}
         </div>
 
         <div className="w-full h-px bg-dark/10 mt-16 md:mt-24" />

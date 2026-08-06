@@ -1,12 +1,58 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 const WHATSAPP_LINK = "https://wa.me/919875432441?text=Hi%20Calcutta%20Backpackers!%20I'm%20interested%20in%20booking%20a%20stay.";
+
+type GuideItem = {
+  title: string;
+  description: string;
+  image: string;
+  color: string;
+};
+
+// Pulled out into its own component (instead of calling useTransform() inside
+// the .map() below) so each card's hooks are tied to a stable component
+// instance rather than a loop iteration - removes the need for the
+// react-hooks/rules-of-hooks eslint-disables that were here before, and
+// can't break if the number of cards ever changes.
+function GuideCard({ item, index, scrollYProgress }: { item: GuideItem; index: number; scrollYProgress: MotionValue<number> }) {
+  const progress = useTransform(
+    scrollYProgress,
+    [index * 0.33, (index + 1) * 0.33],
+    [0, 1]
+  );
+  const scale = useTransform(progress, [0, 1], [0.95, 1]);
+  const y = useTransform(progress, [0, 1], [50, 0]);
+  const opacity = useTransform(progress, [0, 0.5, 1], [0, 1, 1]);
+
+  return (
+    <motion.div
+      style={{ scale, y, opacity }}
+      className={`sticky top-32 w-full h-[500px] md:h-[600px] rounded-[32px] overflow-hidden mb-8 ${item.color} shadow-xl flex flex-col md:flex-row will-change-transform border border-dark/5`}
+    >
+      <div className="w-full md:w-1/2 h-[50%] md:h-full relative">
+        <Image src={item.image} alt={item.title} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+      </div>
+
+      <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center">
+        <h3 className="heading-lg font-serif text-dark mb-6 leading-tight">
+          {item.title}
+        </h3>
+        <p className="text-dark/70 text-lg mb-10 leading-relaxed max-w-md">
+          {item.description}
+        </p>
+        <Link href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="btn-primary w-fit">
+          Book this experience <ArrowRight size={16} />
+        </Link>
+      </div>
+    </motion.div>
+  );
+}
 
 const thingsToDo = [
   {
@@ -65,45 +111,9 @@ export default function KolkataGuide() {
 
         {/* Stacked Cards */}
         <div className="relative h-[250vh]">
-          {thingsToDo.map((item, i) => {
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            const progress = useTransform(
-              scrollYProgress, 
-              [i * 0.33, (i + 1) * 0.33], 
-              [0, 1]
-            );
-            
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            const scale = useTransform(progress, [0, 1], [0.95, 1]);
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            const y = useTransform(progress, [0, 1], [50, 0]);
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            const opacity = useTransform(progress, [0, 0.5, 1], [0, 1, 1]);
-
-            return (
-              <motion.div
-                key={item.title}
-                style={{ scale, y, opacity }}
-                className={`sticky top-32 w-full h-[500px] md:h-[600px] rounded-[32px] overflow-hidden mb-8 ${item.color} shadow-xl flex flex-col md:flex-row will-change-transform border border-dark/5`}
-              >
-                <div className="w-full md:w-1/2 h-[50%] md:h-full relative">
-                  <Image src={item.image} alt={item.title} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
-                </div>
-                
-                <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center">
-                  <h3 className="heading-lg font-serif text-dark mb-6 leading-tight">
-                    {item.title}
-                  </h3>
-                  <p className="text-dark/70 text-lg mb-10 leading-relaxed max-w-md">
-                    {item.description}
-                  </p>
-                  <Link href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="btn-primary w-fit">
-                    Book this experience <ArrowRight size={16} />
-                  </Link>
-                </div>
-              </motion.div>
-            );
-          })}
+          {thingsToDo.map((item, i) => (
+            <GuideCard key={item.title} item={item} index={i} scrollYProgress={scrollYProgress} />
+          ))}
         </div>
       </div>
     </section>

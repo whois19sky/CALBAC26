@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { getRooms, urlFor, hasValidImage } from "@/lib/sanity";
+import { urlFor, hasValidImage } from "@/lib/sanity";
 import type { SanityRoom } from "@/lib/sanity/queries";
 import { ArrowRight, Check, CheckCircle2 } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
@@ -16,21 +16,31 @@ import RoomBrowser from "./RoomBrowser";
 
 const WHATSAPP_NUMBER = "919875432441";
 
-export default function BookingPage() {
+// Minimal, generic emergency fallback - only used if Sanity itself returned
+// no rooms at all. Not meant to look like real branded room options, just
+// enough to keep the booking form usable in a true outage.
+const EMERGENCY_FALLBACK_ROOMS: SanityRoom[] = [
+  { _id: "fallback-room", name: "Room / Dorm Bed", slug: { current: "room" }, tagline: "Contact us for current options", description: "Our room list is temporarily unavailable - message us directly on WhatsApp and we'll confirm availability and pricing.", pricePerNight: 0, capacity: 1, features: [], images: [], isActive: true, sortOrder: 1 },
+];
+
+export default function BookingPage({ initialRooms }: { initialRooms: SanityRoom[] }) {
   const searchParams = useSearchParams();
   const preselectedRoomId = searchParams.get("room");
-  
+
+  const rooms = initialRooms.length > 0 ? initialRooms : EMERGENCY_FALLBACK_ROOMS;
+
   const [step, setStep] = useState(1);
-  const [rooms, setRooms] = useState<SanityRoom[]>([]);
-  const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
   // Form State
   const [checkInDate, setCheckInDate] = useState("");
   const [checkOutDate, setCheckOutDate] = useState("");
   const [guestsCount, setGuestsCount] = useState(1);
-  const [selectedRoom, setSelectedRoom] = useState<SanityRoom | null>(null);
-  
+  const [selectedRoom, setSelectedRoom] = useState<SanityRoom | null>(() => {
+    if (!preselectedRoomId) return null;
+    return rooms.find(r => r._id === preselectedRoomId || r.slug?.current === preselectedRoomId) || null;
+  });
+
   const [guestDetails, setGuestDetails] = useState({
     name: "",
     email: "",
@@ -39,35 +49,6 @@ export default function BookingPage() {
   });
 
   const [bookingId, setBookingId] = useState("");
-
-  // Minimal, generic emergency fallback - only used if Sanity itself is
-  // completely unreachable. Not meant to look like real branded room
-  // options, just enough to keep the booking form usable in a true outage.
-  const EMERGENCY_FALLBACK_ROOMS: SanityRoom[] = [
-    { _id: "fallback-room", name: "Room / Dorm Bed", slug: { current: "room" }, tagline: "Contact us for current options", description: "Our room list is temporarily unavailable - message us directly on WhatsApp and we'll confirm availability and pricing.", pricePerNight: 0, capacity: 1, features: [], images: [], isActive: true, sortOrder: 1 },
-  ];
-
-  useEffect(() => {
-    async function fetchRooms() {
-      try {
-        const data = await getRooms();
-        if (data && data.length > 0) {
-          setRooms(data);
-          if (preselectedRoomId) {
-            const room = data.find(r => r._id === preselectedRoomId || r.slug?.current === preselectedRoomId);
-            if (room) setSelectedRoom(room);
-          }
-        } else {
-          setRooms(EMERGENCY_FALLBACK_ROOMS);
-        }
-      } catch (err) {
-        console.error("Failed to fetch rooms from Sanity, using emergency fallback:", err);
-        setRooms(EMERGENCY_FALLBACK_ROOMS);
-      }
-      setLoading(false);
-    }
-    fetchRooms();
-  }, [preselectedRoomId]);
 
   // Set minimum date to today
   const today = new Date().toISOString().split('T')[0];
@@ -241,9 +222,7 @@ export default function BookingPage() {
                   <button onClick={() => setStep(1)} className="text-sm font-medium text-dark/50 hover:text-dark">Edit Dates</button>
                 </div>
 
-                {loading ? (
-                  <div className="flex justify-center py-10"><div className="w-8 h-8 border-4 border-waabi-green border-t-waabi-green-dark rounded-full animate-spin"></div></div>
-                ) : rooms.length === 0 ? (
+                {rooms.length === 0 ? (
                   <div className="text-center py-10 text-dark/50">
                     <p className="mb-2">Room information is being updated right now.</p>
                     <p>Message us on WhatsApp and we'll sort you out directly.</p>
@@ -346,7 +325,7 @@ export default function BookingPage() {
                   Your booking request (Ref: <strong>{bookingId.split('-')[0]}</strong>) has been generated. We are redirecting you to WhatsApp to finalize it.
                 </p>
                 <div className="space-y-4">
-                  <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" className="btn-primary shadow-lg inline-block w-full max-w-xs">
+                  <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="btn-primary shadow-lg inline-block w-full max-w-xs">
                     Open WhatsApp Manually
                   </a>
                   <Link href="/" className="btn-outline inline-block w-full max-w-xs">

@@ -101,7 +101,7 @@ export default function BookingsManager() {
                         <p className="text-dark/80">{booking.guest_email}</p>
                         <div className="flex items-center gap-2 mt-1">
                           <p className="text-dark/80 font-medium">{booking.guest_phone}</p>
-                          <a href={`https://wa.me/${booking.guest_phone.replace(/\D/g, '')}`} target="_blank" className="text-green-600 hover:text-green-700">
+                          <a href={`https://wa.me/${booking.guest_phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="text-green-600 hover:text-green-700">
                             <MessageCircle size={14} />
                           </a>
                         </div>

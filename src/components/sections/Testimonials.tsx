@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Quote } from "lucide-react";
-import { getTestimonials } from "@/lib/sanity";
+import type { SanityTestimonial } from "@/lib/sanity/queries";
 
-// Shown briefly while testimonials load, and as a fallback if Sanity is ever empty.
+// Fallback if Sanity has no testimonials configured yet.
 const fallbackTestimonials = [
   {
     quote:
@@ -15,25 +15,11 @@ const fallbackTestimonials = [
   },
 ];
 
-export default function Testimonials() {
-  const [testimonials, setTestimonials] = useState<{ quote: string; guestName: string; origin: string }[]>(
-    fallbackTestimonials
-  );
+export default function Testimonials({ initialTestimonials }: { initialTestimonials: SanityTestimonial[] }) {
+  const testimonials = initialTestimonials.length > 0
+    ? initialTestimonials.map(t => ({ quote: t.quote, guestName: t.guestName, origin: t.origin }))
+    : fallbackTestimonials;
   const [active, setActive] = useState(0);
-
-  useEffect(() => {
-    const fetchTestimonials = async () => {
-      try {
-        const data = await getTestimonials();
-        if (data && data.length > 0) {
-          setTestimonials(data.map(t => ({ quote: t.quote, guestName: t.guestName, origin: t.origin })));
-        }
-      } catch (err) {
-        console.error("Failed to fetch testimonials from Sanity:", err);
-      }
-    };
-    fetchTestimonials();
-  }, []);
 
   useEffect(() => {
     if (testimonials.length <= 1) return;

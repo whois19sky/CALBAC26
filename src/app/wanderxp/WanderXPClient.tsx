@@ -4,30 +4,16 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Clock, MapPin, Compass } from "lucide-react";
-import { getExperiences, urlFor } from "@/lib/sanity";
-import { useEffect, useState } from "react";
+import { urlFor } from "@/lib/sanity";
+import { useState } from "react";
 import type { SanityExperience } from "@/lib/sanity/queries";
 
 const categories = ["All", "Culinary", "Culture", "Community", "Adventure"];
 
-export default function WanderXPPage() {
-  const [experiences, setExperiences] = useState<SanityExperience[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function WanderXPPage({ initialExperiences }: { initialExperiences: SanityExperience[] }) {
+  const experiences = initialExperiences;
   const [activeCategory, setActiveCategory] = useState("All");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const exps = await getExperiences();
-        if (exps) setExperiences(exps);
-      } catch (err) {
-        console.error("Failed to fetch experiences from Sanity:", err);
-      }
-      setLoading(false);
-    };
-
-    fetchData();
-  }, []);
   return (
     <>
       
@@ -102,11 +88,7 @@ export default function WanderXPPage() {
             ))}
           </div>
 
-          {loading ? (
-             <div className="flex justify-center items-center h-64">
-               <div className="w-10 h-10 border-4 border-waabi-green border-t-dark rounded-full animate-spin"></div>
-             </div>
-          ) : (() => {
+          {(() => {
             const filteredExperiences = experiences.filter(
               (exp) => activeCategory === "All" || exp.category === activeCategory
             );
@@ -159,6 +141,7 @@ export default function WanderXPPage() {
                       <Link
                         href={`https://wa.me/919875432441?text=Hi!%20I'm%20interested%20in%20the%20${encodeURIComponent(exp.title)}%20experience.`}
                         target="_blank"
+                        rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-5 py-2.5 bg-waabi-green text-dark text-sm font-semibold rounded-full hover:bg-waabi-green-dark transition-all duration-300"
                       >
                         Book <ArrowRight size={14} />
@@ -190,6 +173,7 @@ export default function WanderXPPage() {
           <Link
             href="https://wa.me/919875432441?text=Hi%20Calcutta%20Backpackers!%20I'd%20like%20to%20know%20more%20about%20WanderXP%20tours."
             target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-8 py-4 bg-waabi-green text-dark font-semibold rounded-full hover:bg-waabi-green-dark hover:scale-105 transition-all duration-300 shadow-[0_8px_30px_rgba(201,222,240,0.3)]"
           >
             Book on WhatsApp <ArrowRight size={18} />

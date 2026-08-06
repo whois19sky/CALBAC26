@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { sanityClient } from './client';
 
 export type SanityRoom = {
@@ -84,50 +85,57 @@ export type SanitySiteSettings = {
   seo: Array<{ page: string; metaTitle: string; metaDescription: string }>;
 };
 
-export async function getRooms(): Promise<SanityRoom[]> {
+// Every fetcher below is wrapped in React's `cache()`. On the server this
+// deduplicates identical calls made while rendering a single request - e.g.
+// a page's generateMetadata() and the page component itself both asking for
+// the same Sanity document only ever result in one real network request.
+// (On the client, cache() is a no-op passthrough - harmless, since these
+// functions are also imported by client-side hooks.)
+
+export const getRooms = cache(async (): Promise<SanityRoom[]> => {
   return sanityClient.fetch(
     `*[_type == "room" && isActive == true] | order(sortOrder asc)`
   );
-}
+});
 
-export async function getBlogPosts(): Promise<SanityBlogPost[]> {
+export const getBlogPosts = cache(async (): Promise<SanityBlogPost[]> => {
   return sanityClient.fetch(
     `*[_type == "blogPost" && isPublished == true] | order(isPinned desc, publishedAt desc)`
   );
-}
+});
 
-export async function getBlogPostBySlug(slug: string): Promise<SanityBlogPost | null> {
+export const getBlogPostBySlug = cache(async (slug: string): Promise<SanityBlogPost | null> => {
   return sanityClient.fetch(
     `*[_type == "blogPost" && slug.current == $slug][0]`,
     { slug }
   );
-}
+});
 
-export async function getTestimonials(): Promise<SanityTestimonial[]> {
+export const getTestimonials = cache(async (): Promise<SanityTestimonial[]> => {
   return sanityClient.fetch(
     `*[_type == "testimonial" && isActive == true] | order(sortOrder asc)`
   );
-}
+});
 
-export async function getExperiences(): Promise<SanityExperience[]> {
+export const getExperiences = cache(async (): Promise<SanityExperience[]> => {
   return sanityClient.fetch(
     `*[_type == "experience"] | order(sortOrder asc)`
   );
-}
+});
 
-export async function getSiteSettings(): Promise<SanitySiteSettings | null> {
+export const getSiteSettings = cache(async (): Promise<SanitySiteSettings | null> => {
   return sanityClient.fetch(`*[_type == "siteSettings"][0]{
     ...,
     heroVideoMobile { asset->{url} }
   }`);
-}
+});
 
 /**
  * Convenience helper: gets the SEO title/description for a specific page from
  * Site Settings, if set. Returns null if not configured, so callers can fall
  * back to their own hardcoded defaults.
  */
-export async function getPageSeo(pageName: string): Promise<{ metaTitle: string; metaDescription: string } | null> {
+export const getPageSeo = cache(async (pageName: string): Promise<{ metaTitle: string; metaDescription: string } | null> => {
   const settings = await getSiteSettings();
   const match = settings?.seo?.find((s) => s.page === pageName);
   if (match && (match.metaTitle || match.metaDescription)) return match;
@@ -141,4 +149,4 @@ export async function getPageSeo(pageName: string): Promise<{ metaTitle: string;
   }
 
   return null;
-}
+});

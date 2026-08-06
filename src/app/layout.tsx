@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 import Analytics from "@/components/Analytics";
 import SiteChrome from "@/components/layout/SiteChrome";
 import { getSiteSettings, getTestimonials, hasValidImage, urlFor } from "@/lib/sanity";
+import { SiteSettingsProvider } from "@/lib/sanity/SiteSettingsContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -181,9 +182,11 @@ export default async function RootLayout({
             },
           }} 
         />
-        <SiteChrome>
-          <main className="flex-grow">{children}</main>
-        </SiteChrome>
+        <SiteSettingsProvider value={settings}>
+          <SiteChrome>
+            <main className="flex-grow">{children}</main>
+          </SiteChrome>
+        </SiteSettingsProvider>
         <Analytics />
       </body>
     </html>

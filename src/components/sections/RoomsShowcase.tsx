@@ -1,42 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
-import { getRooms, urlFor } from "@/lib/sanity";
+import { urlFor } from "@/lib/sanity";
 import type { SanityRoom } from "@/lib/sanity/queries";
 
 const WHATSAPP_LINK = "https://wa.me/919875432441?text=Hi%20Calcutta%20Backpackers!%20I'm%20interested%20in%20booking%20a%20stay.";
 
-export default function RoomsShowcase() {
-  const [rooms, setRooms] = useState<SanityRoom[]>([]);
+export default function RoomsShowcase({ initialRooms }: { initialRooms: SanityRoom[] }) {
+  const rooms = initialRooms;
   const [activeIndex, setActiveIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        const data = await getRooms();
-        if (data && data.length > 0) setRooms(data);
-      } catch (err) {
-        console.error("Failed to fetch rooms from Sanity:", err);
-      }
-      setLoading(false);
-    };
-    fetchRooms();
-  }, []);
-
-  if (loading) {
-    return (
-      <section id="rooms" className="py-24 md:py-40 bg-white">
-        <div className="max-w-[1400px] mx-auto px-6 md:px-10 flex justify-center">
-          <div className="w-8 h-8 border-4 border-waabi-green border-t-waabi-green-dark rounded-full animate-spin" />
-        </div>
-      </section>
-    );
-  }
 
   if (rooms.length === 0) return null;
 

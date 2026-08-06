@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getPageSeo } from "@/lib/sanity";
+import { getPageSeo, getBlogPosts } from "@/lib/sanity";
 import BlogClient from "./BlogClient";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -10,6 +10,9 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function BlogPage() {
-  return <BlogClient />;
+export default async function BlogPage() {
+  // Fetched server-side so posts are in the initial HTML (crawlable, no
+  // loading spinner) instead of appearing only after a client-side fetch.
+  const posts = await getBlogPosts().catch(() => []);
+  return <BlogClient initialPosts={posts} />;
 }

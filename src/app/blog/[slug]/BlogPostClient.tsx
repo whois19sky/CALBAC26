@@ -1,13 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useParams, notFound } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Calendar, User, Tag } from "lucide-react";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
-import { getBlogPostBySlug, urlFor } from "@/lib/sanity";
+import { urlFor } from "@/lib/sanity";
 import type { SanityBlogPost } from "@/lib/sanity/queries";
 import { format } from "date-fns";
 
@@ -54,38 +52,7 @@ const portableTextComponents: PortableTextComponents = {
   },
 };
 
-export default function BlogPostClient() {
-  const { slug } = useParams();
-  const [post, setPost] = useState<SanityBlogPost | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchPost() {
-      try {
-        const data = await getBlogPostBySlug(slug as string);
-        if (!data) {
-          notFound();
-        } else {
-          setPost(data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch blog post from Sanity:", err);
-      }
-      setLoading(false);
-    }
-    if (slug) fetchPost();
-  }, [slug]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex justify-center items-center">
-        <div className="w-8 h-8 border-4 border-waabi-green border-t-waabi-green-dark rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  if (!post) return null;
-
+export default function BlogPostClient({ post }: { post: SanityBlogPost }) {
   return (
     <>
       
